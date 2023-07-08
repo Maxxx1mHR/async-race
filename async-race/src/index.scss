@@ -1,0 +1,16 @@
+@import 'style/base/normalize';
+@import 'style/abstract/constants';
+@import 'style/abstract/placeholder';
+@import 'style/abstract/mixin';
+@import 'style/abstract/animations.scss';
+
+@import 'style/base/base';
+@import 'style/base/fonts';
+
+@import 'style/components/game';
+@import 'style/components/boat';
+@import 'style/components/editor';
+@import 'style/components/menu';
+@import 'style/components/my-tags';
+@import 'style/components/footer';
+@import 'style/components/modal';
