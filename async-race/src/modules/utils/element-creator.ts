@@ -1,25 +1,29 @@
-import { IElement } from '../types/types';
+import { IElementParams } from '../types/types';
 
-class ElementCreator {
+export default class ElementCreator {
   private element: HTMLElement | null;
 
-  constructor(param: IElement) {
+  constructor(param: IElementParams) {
     this.element = null;
     this.createElement(param);
   }
 
-  private createElement(param: IElement): void {
+  private createElement(param: IElementParams): void {
     this.element = document.createElement(param.tag);
     this.setCssClasses(param.className);
-    this.setTextContent(param.textContent);
-    this.setCallback(param.callback);
+    if (param.textContent) {
+      this.setTextContent(param.textContent);
+    }
+    if (param.callback) {
+      this.setCallback(param.callback);
+    }
   }
 
-  private getElement(): HTMLElement | null {
+  public getElement(): HTMLElement | null {
     return this.element;
   }
 
-  private addInnerElement(element: HTMLElement | ElementCreator): void {
+  public addInnerElement(element: HTMLElement | ElementCreator): void {
     if (element instanceof ElementCreator) {
       const htmlElement = element.getElement();
       if (htmlElement instanceof HTMLElement) {
@@ -30,13 +34,12 @@ class ElementCreator {
     }
   }
 
-  private setCssClasses(...cssClasses: string[]): void {
-    this.element?.classList.add(...cssClasses);
-    // cssClasses.forEach((className) => {
-    //   if (this.element) {
-    //     this.element.classList.add(className);
-    //   }
-    // });
+  private setCssClasses(cssClasses: string[]): void {
+    cssClasses.forEach((className) => {
+      if (this.element) {
+        this.element.classList.add(className);
+      }
+    });
   }
 
   private setTextContent(text: string): void {
@@ -51,5 +54,3 @@ class ElementCreator {
     }
   }
 }
-
-export default ElementCreator;

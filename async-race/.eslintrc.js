@@ -24,6 +24,8 @@ module.exports = {
         "@typescript-eslint"
     ],
     "rules": {
+      "class-methods-use-this": ["off", { "enforceForClassFields": false }],
+
         "prettier/prettier": "error",
         "@typescript-eslint/no-explicit-any": "error",
         "@typescript-eslint/no-inferrable-types": "off",
@@ -65,6 +67,6 @@ module.exports = {
         "semi": [
             "error",
             "always"
-        ]
-    }
+        ],
+    },
 }
