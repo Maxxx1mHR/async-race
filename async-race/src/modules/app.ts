@@ -1,5 +1,6 @@
-import GarageView from './view/garage-view';
-import HeaderView from './view/header-view';
+import HeaderView from './view/header/header-view';
+import GarageView from './view/main/garage/garage-view';
+import MainView from './view/main/main-view';
 
 export default class App {
   constructor() {
@@ -7,13 +8,15 @@ export default class App {
   }
 
   private createView(): void {
-    const headerView = new HeaderView();
-    const garageView = new GarageView();
+    const mainView = new MainView();
+    const headerView = new HeaderView(mainView);
+    // const garageView = new GarageView();
 
     const headerHtmleElement = headerView.getHTMLElement();
-    const garageHtmlElement = garageView.getHTMLElement();
-    if (headerHtmleElement && garageHtmlElement) {
-      document.body.append(headerHtmleElement, garageHtmlElement);
+    const mainHtmlView = mainView.getHTMLElement();
+    // const garageHtmlElement = garageView.getHTMLElement();
+    if (headerHtmleElement && mainHtmlView) {
+      document.body.append(headerHtmleElement, mainHtmlView);
     }
   }
 }

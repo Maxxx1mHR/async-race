@@ -4,3 +4,8 @@ export interface IElementParams {
   textContent?: string;
   callback?: CallableFunction;
 }
+
+export interface IPage {
+  name: string;
+  callback: CallableFunction;
+}

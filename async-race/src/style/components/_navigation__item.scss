@@ -1,0 +1,19 @@
+.navigation {
+  width: 200px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.navigation__item {
+  width: 80px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid red;
+  cursor: pointer;
+}
+
+.navigation__item-active {
+  background-color: green;
+}
