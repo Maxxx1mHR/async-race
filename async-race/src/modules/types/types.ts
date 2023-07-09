@@ -3,6 +3,8 @@ export interface IElementParams {
   className: string[];
   textContent?: string;
   callback?: CallableFunction;
+  src?: string;
+  alt?: string;
 }
 
 export interface IPage {

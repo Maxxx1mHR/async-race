@@ -1,0 +1,38 @@
+.track__setting-modification {
+  display: flex;
+  align-items: center;
+  // max-width: 150px;
+  > * {
+    margin-right: 10px;
+  }
+}
+.track__setting-action {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  > * {
+    margin-right: 10px;
+  }
+}
+
+.track__wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-bottom: dashed white 5px;
+}
+
+.track__finish {
+  width: 70px;
+  margin-right: 150px;
+}
+
+.car {
+  display: inline-block;
+  width: 110px;
+  height: 45px;
+  background-color: red;
+  -webkit-mask: url('../../assets/img/car2.svg') no-repeat center;
+  mask: url(../../assets/img/car2.svg) no-repeat center;
+  // background-size: 120px 40px;
+}

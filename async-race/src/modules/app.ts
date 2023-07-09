@@ -1,5 +1,5 @@
 import HeaderView from './view/header/header-view';
-import GarageView from './view/main/garage/garage-view';
+// import GarageView from './view/main/garage/garage-view';
 import MainView from './view/main/main-view';
 
 export default class App {
