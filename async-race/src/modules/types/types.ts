@@ -5,9 +5,20 @@ export interface IElementParams {
   callback?: CallableFunction;
   src?: string;
   alt?: string;
+  backgroundColor?: string;
 }
 
 export interface IPage {
   name: string;
   callback: CallableFunction;
 }
+
+export interface ICar {
+  name: string;
+  color: string;
+  id: number;
+}
+
+// export interface ICarResponse {
+//   garage: ICar[];
+// }

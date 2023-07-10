@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { ICar } from '../../../types/types';
 import ElementCreator from '../../../utils/element-creator';
 import ServerQuery from '../../../utils/server-query';
 import View from '../../view';
+import TrackView from './track/track-view';
 
 const cssClasses = {
   GARAGE: 'garage',
@@ -25,10 +27,8 @@ export default class GarageView extends View {
 
   private async configureView(): Promise<void> {
     const serverQuery = new ServerQuery();
-
-    // console.log(serverQuery.getCars());
-
     const countCars = await serverQuery.getCountCars();
+
     const paramsTitle = {
       tag: 'h2',
       className: [cssClasses.TITILE],
@@ -44,5 +44,15 @@ export default class GarageView extends View {
     };
     const creatorSubtitle = new ElementCreator(paramsPage);
     this.elementCreator.addInnerElement(creatorSubtitle);
+
+    const cars: ICar[] = await serverQuery.getCars();
+
+    cars.forEach((car) => {
+      const track = new TrackView(car.name, car.color);
+      const htmlTrack = track.getHTMLElement();
+      if (htmlTrack instanceof HTMLElement) {
+        this.elementCreator.addInnerElement(htmlTrack);
+      }
+    });
   }
 }

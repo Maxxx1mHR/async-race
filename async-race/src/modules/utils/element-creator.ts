@@ -17,6 +17,13 @@ export default class ElementCreator {
     if (param.callback) {
       this.setCallback(param.callback);
     }
+    if (param.src && param.alt) {
+      this.setSrc(param.src);
+      this.setAlt(param.alt);
+    }
+    if (param.backgroundColor) {
+      this.setBackgroundColor(param.backgroundColor);
+    }
   }
 
   public getElement(): HTMLElement | null {
@@ -51,6 +58,24 @@ export default class ElementCreator {
   private setCallback(callback: CallableFunction): void {
     if (typeof callback === 'function') {
       this.element?.addEventListener('click', (event) => callback(event));
+    }
+  }
+
+  private setSrc(src: string): void {
+    if (this.element instanceof HTMLImageElement) {
+      this.element.src = src;
+    }
+  }
+
+  private setAlt(alt: string): void {
+    if (this.element instanceof HTMLImageElement) {
+      this.element.alt = alt;
+    }
+  }
+
+  private setBackgroundColor(backgroundColor: string): void {
+    if (this.element instanceof HTMLElement) {
+      this.element.style.backgroundColor = backgroundColor;
     }
   }
 }
