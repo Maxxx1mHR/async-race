@@ -21,6 +21,8 @@ export default abstract class View {
       src: params.src,
       alt: params.alt,
       backgroundColor: params.backgroundColor,
+      type: params.type,
+      value: params.value,
     };
     const elementCreator = new ElementCreator(elementParams);
     return elementCreator;

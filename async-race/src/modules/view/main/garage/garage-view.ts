@@ -3,6 +3,7 @@ import { ICar } from '../../../types/types';
 import ElementCreator from '../../../utils/element-creator';
 import ServerQuery from '../../../utils/server-query';
 import View from '../../view';
+import CarSettingView from './customizeCar/car-setting-view';
 import TrackView from './track/track-view';
 
 const cssClasses = {
@@ -22,6 +23,7 @@ export default class GarageView extends View {
     };
     super(params);
 
+    this.configureSettingView();
     this.configureView();
   }
 
@@ -54,5 +56,13 @@ export default class GarageView extends View {
         this.elementCreator.addInnerElement(htmlTrack);
       }
     });
+  }
+
+  private configureSettingView(): void {
+    const settings = new CarSettingView();
+    const htmlSettings = settings.getHTMLElement();
+    if (htmlSettings instanceof HTMLElement) {
+      this.elementCreator.addInnerElement(htmlSettings);
+    }
   }
 }

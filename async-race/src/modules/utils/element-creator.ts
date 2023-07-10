@@ -24,6 +24,12 @@ export default class ElementCreator {
     if (param.backgroundColor) {
       this.setBackgroundColor(param.backgroundColor);
     }
+    if (param.type) {
+      this.setType(param.type);
+    }
+    if (param.value) {
+      this.setValue(param.value);
+    }
   }
 
   public getElement(): HTMLElement | null {
@@ -76,6 +82,18 @@ export default class ElementCreator {
   private setBackgroundColor(backgroundColor: string): void {
     if (this.element instanceof HTMLElement) {
       this.element.style.backgroundColor = backgroundColor;
+    }
+  }
+
+  private setType(type: string): void {
+    if (this.element instanceof HTMLInputElement) {
+      this.element.type = type;
+    }
+  }
+
+  private setValue(value: string): void {
+    if (this.element instanceof HTMLInputElement) {
+      this.element.value = value;
     }
   }
 }

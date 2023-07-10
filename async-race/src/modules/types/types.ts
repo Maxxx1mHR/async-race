@@ -6,6 +6,8 @@ export interface IElementParams {
   src?: string;
   alt?: string;
   backgroundColor?: string;
+  type?: string;
+  value?: string;
 }
 
 export interface IPage {
