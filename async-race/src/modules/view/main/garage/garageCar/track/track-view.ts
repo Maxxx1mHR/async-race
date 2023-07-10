@@ -1,6 +1,6 @@
-import ElementCreator from '../../../../utils/element-creator';
-import View from '../../../view';
-import img_finish from '../../../../../assets/img/finish.png';
+import ElementCreator from '../../../../../utils/element-creator';
+import View from '../../../../view';
+import img_finish from '../../../../../../assets/img/finish.png';
 
 const img = new Image();
 

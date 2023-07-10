@@ -15,10 +15,21 @@ export interface IPage {
   callback: CallableFunction;
 }
 
+export interface IInput {
+  className: string[];
+  type: string;
+  value?: string;
+}
+
+export interface IButton {
+  name: string;
+  callback: CallableFunction;
+}
+
 export interface ICar {
   name: string;
   color: string;
-  id: number;
+  id?: number;
 }
 
 // export interface ICarResponse {

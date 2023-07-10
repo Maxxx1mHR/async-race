@@ -23,18 +23,18 @@ export default class LinkNavigationView extends View {
   }
 
   public setSelectedStatus(): void {
-    this.linkElements.forEach((linkElement) => linkElement.setNotSelectedStatus());
-    const element = this.elementCreator.getElement();
-    element?.classList.add(cssClasses.ITEM_SELECTED);
+    // this.linkElements.forEach((linkElement) => linkElement.setNotSelectedStatus());
+    // const element = this.elementCreator.getElement();
+    // element?.classList.add(cssClasses.ITEM_SELECTED);
   }
 
   public setNotSelectedStatus(): void {
-    const element = this.elementCreator.getElement();
-    element?.classList.remove(cssClasses.ITEM_SELECTED);
+    // const element = this.elementCreator.getElement();
+    // element?.classList.remove(cssClasses.ITEM_SELECTED);
   }
 
   private configureView(): void {
-    const element = this.elementCreator.getElement();
-    element?.addEventListener('click', this.setSelectedStatus.bind(this));
+    // const element = this.elementCreator.getElement();
+    // element?.addEventListener('click', this.setSelectedStatus.bind(this));
   }
 }
