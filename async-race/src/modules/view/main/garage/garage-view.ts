@@ -24,6 +24,7 @@ const track = `
           <div class="car"></div>
           <img src="${img_finish}" alt="finish" class="track__finish" />
         </div>
+
       </div>
       `;
 export default class GarageView {

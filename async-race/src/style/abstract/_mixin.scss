@@ -5,6 +5,9 @@
   font-style: $style;
 }
 
+@mixin test {
+}
+
 @mixin media-laptop-large {
   @media (max-width: $laptop-large-width) {
     @content;
