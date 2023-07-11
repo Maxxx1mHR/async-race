@@ -1,33 +1,11 @@
-import View from '../view';
-import GarageView from './garage/garage-view';
-
-const cssClasses = {
-  MAIN: 'main',
-};
-
-export default class MainView extends View {
+export default class MainView {
   constructor() {
-    const params = {
-      tag: 'main',
-      className: [cssClasses.MAIN],
-    };
-    super(params);
-    const garageView = new GarageView();
-    const htmlGaragView = garageView.getHTMLElement();
-    if (htmlGaragView instanceof HTMLElement) {
-      this.elementCreator.addInnerElement(htmlGaragView);
-    }
+    this.createView();
   }
 
-  public setContent(view: View): void {
-    const element = view.getHTMLElement();
-    const currentElement = this.elementCreator.getElement();
-
-    while (currentElement?.firstElementChild) {
-      currentElement.firstElementChild.remove();
-    }
-    if (element instanceof HTMLElement) {
-      this.elementCreator.addInnerElement(element);
-    }
+  private createView(): void {
+    const main = document.createElement('div');
+    main.classList.add('main');
+    document.body.append(main);
   }
 }

@@ -1,15 +1,17 @@
-import View from '../../view';
+const pages = `
+    <div class="garage">
+        <h2>Winners</h2>
+    </div>`;
 
-const cssClasses = {
-  WINNERS: 'winners',
-};
+export default class WinnersView {
+  // constructor() {
+  // this.createView();
+  // }
 
-export default class WinnersView extends View {
-  constructor() {
-    const params = {
-      tag: 'div',
-      className: [cssClasses.WINNERS],
-    };
-    super(params);
+  public createElement(): HTMLElement {
+    const div = document.createElement('div');
+    div.innerHTML = pages;
+    return div;
+    // document.body.append(div);
   }
 }

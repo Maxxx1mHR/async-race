@@ -1,22 +1,16 @@
-import HeaderView from './view/header/header-view';
-// import GarageView from './view/main/garage/garage-view';
+/* eslint-disable no-new */
+import HeaderVIew from './header/header-view';
 import MainView from './view/main/main-view';
+
+// const pages = `
+//     <div class="header">
+//       <div class="button">Garage</div>
+//       <div class="button">Winners</div>
+//     </div>`;
 
 export default class App {
   constructor() {
-    this.createView();
-  }
-
-  private createView(): void {
-    const mainView = new MainView();
-    const headerView = new HeaderView(mainView);
-    // const garageView = new GarageView();
-
-    const headerHtmleElement = headerView.getHTMLElement();
-    const mainHtmlView = mainView.getHTMLElement();
-    // const garageHtmlElement = garageView.getHTMLElement();
-    if (headerHtmleElement && mainHtmlView) {
-      document.body.append(headerHtmleElement, mainHtmlView);
-    }
+    new HeaderVIew();
+    new MainView();
   }
 }
