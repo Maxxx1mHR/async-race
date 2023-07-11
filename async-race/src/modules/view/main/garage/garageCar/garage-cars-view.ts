@@ -58,6 +58,15 @@ export default class GarageCarsView extends View {
     });
   }
 
+  public setContent(): void {
+    const currentElement = this.elementCreator.getElement();
+
+    while (currentElement?.firstElementChild) {
+      currentElement.firstElementChild.remove();
+    }
+    this.configureView();
+  }
+
   // private configureSettingView(): void {
   //   const settings = new CarSettingView();
   //   const htmlSettings = settings.getHTMLElement();

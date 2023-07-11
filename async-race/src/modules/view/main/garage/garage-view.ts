@@ -1,5 +1,5 @@
 import View from '../../view';
-import CarSettingView from './customizeCar/car-setting-view';
+import CarSettingView from './carSetting/car-setting-view';
 import GarageCarsView from './garageCar/garage-cars-view';
 
 const cssClasses = {
@@ -18,9 +18,9 @@ export default class GarageView extends View {
   }
 
   private configureView(): void {
-    const carSetting = new CarSettingView();
-    this.elementCreator.addInnerElement(carSetting.getHTMLElement() as HTMLElement);
     const garageCarsView = new GarageCarsView();
+    const carSetting = new CarSettingView(garageCarsView);
+    this.elementCreator.addInnerElement(carSetting.getHTMLElement() as HTMLElement);
     this.elementCreator.addInnerElement(garageCarsView.getHTMLElement() as HTMLElement);
   }
 }
