@@ -70,6 +70,7 @@ export default class CarSettingView extends View {
     };
     const inputColorCreate = new ElementCreator(paramsInputColor);
     const inputColorUpdate = new ElementCreator(paramsInputColor);
+
     function testFunc(): string[] {
       const text = inputTextCreate.getElement() as HTMLInputElement;
       const color = inputColorCreate.getElement() as HTMLInputElement;
@@ -94,6 +95,11 @@ export default class CarSettingView extends View {
       tag: 'div',
       className: [cssClasses.BUTTON],
       textContent: UPDATE,
+      callback: (): void => {
+        console.log('car-setting-view', garageCarsView.selectedCar);
+
+        console.log('update');
+      },
     };
     const buttonUpdate = new ElementCreator(paramsButtonUpdate);
     const paramsButtonRace = {

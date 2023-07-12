@@ -3,6 +3,7 @@ import { ICar } from '../../../../types/types';
 import ElementCreator from '../../../../utils/element-creator';
 import ServerQuery from '../../../../utils/server-query';
 import View from '../../../view';
+
 // import CarSettingView from '../customizeCar/car-setting-view';
 import TrackView from './track/track-view';
 
@@ -16,6 +17,8 @@ const TITLE_TEXT = 'garage';
 const PAGE = 'page';
 
 export default class GarageCarsView extends View {
+  public selectedCar: ICar[];
+
   constructor() {
     const params = {
       tag: 'div',
@@ -25,6 +28,7 @@ export default class GarageCarsView extends View {
 
     // this.configureSettingView();
     this.configureView();
+    this.selectedCar = [];
   }
 
   private async configureView(): Promise<void> {
@@ -50,7 +54,14 @@ export default class GarageCarsView extends View {
     const cars: ICar[] = await serverQuery.getCars();
 
     cars.forEach((car) => {
-      const track = new TrackView(car.name, car.color);
+      const track = new TrackView(car);
+      const selectOneCarCallback = (): void => {
+        this.getSelectedCar(car);
+        this.selectedCar.push(this.getSelectedCar(car));
+        // console.log(car.id);
+        // console.log(car.color);
+      };
+      track.setCallback(selectOneCarCallback);
       const htmlTrack = track.getHTMLElement();
       if (htmlTrack instanceof HTMLElement) {
         this.elementCreator.addInnerElement(htmlTrack);
@@ -65,6 +76,11 @@ export default class GarageCarsView extends View {
       currentElement.firstElementChild.remove();
     }
     this.configureView();
+  }
+
+  public getSelectedCar(car: ICar): ICar {
+    console.log(car);
+    return car;
   }
 
   // private configureSettingView(): void {

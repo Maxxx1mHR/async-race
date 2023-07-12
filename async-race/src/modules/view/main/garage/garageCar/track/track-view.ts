@@ -1,6 +1,7 @@
 import ElementCreator from '../../../../../utils/element-creator';
 import View from '../../../../view';
 import img_finish from '../../../../../../assets/img/finish.png';
+import { ICar } from '../../../../../types/types';
 
 const img = new Image();
 
@@ -25,16 +26,23 @@ const START = 'start';
 const STOP = 'stop';
 
 export default class TrackView extends View {
-  constructor(carName: string, carColor: string) {
+  private car: ICar;
+
+  private callback: CallableFunction | null;
+
+  constructor(car: ICar) {
     const params = {
       tag: 'div',
       className: [cssClasses.TRACK],
     };
     super(params);
-    this.configureView(carName, carColor);
+
+    this.callback = null;
+    this.car = car;
+    this.configureView();
   }
 
-  private configureView(carName: string, carColor: string): void {
+  private configureView(): void {
     const paramsTrackSettingModification = {
       tag: 'div',
       className: [cssClasses.TRACK_SETTING_MODIFICATION],
@@ -46,6 +54,7 @@ export default class TrackView extends View {
       tag: 'div',
       className: [cssClasses.SELECT, cssClasses.BUTTON],
       textContent: SELECT,
+      callback: this.buttonClickHandler.bind(this),
     };
     const select = new ElementCreator(paramsSelect);
     trackSettingModification.addInnerElement(select);
@@ -61,7 +70,7 @@ export default class TrackView extends View {
     const paramsName = {
       tag: 'div',
       className: [cssClasses.NAME],
-      textContent: carName,
+      textContent: this.car.name,
     };
     const name = new ElementCreator(paramsName);
     trackSettingModification.addInnerElement(name);
@@ -100,7 +109,7 @@ export default class TrackView extends View {
     const paramsCar = {
       tag: 'div',
       className: [cssClasses.CAR],
-      backgroundColor: carColor,
+      backgroundColor: this.car.color,
     };
 
     const car = new ElementCreator(paramsCar);
@@ -115,5 +124,17 @@ export default class TrackView extends View {
 
     const finish = new ElementCreator(paramsFinish);
     trackWrapper.addInnerElement(finish);
+  }
+
+  public setCallback(callback: CallableFunction): void {
+    if (typeof callback === 'function') {
+      this.callback = callback;
+    }
+  }
+
+  private buttonClickHandler(): void {
+    if (this.callback) {
+      this.callback();
+    }
   }
 }
