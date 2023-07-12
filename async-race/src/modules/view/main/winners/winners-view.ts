@@ -1,4 +1,4 @@
-import { ICar, IWinner } from '../../../types/types';
+import { ICar, IWinner, IWinnerResponse } from '../../../types/types';
 import ElementCreator from '../../../utils/element-creator';
 import ServerQuery from '../../../utils/server-query';
 import View from '../../view';
@@ -15,14 +15,22 @@ const cssClasses = {
   SCORE_ITEM_CAR: 'score__item-car',
   CAR: 'car',
   CAR_SMALL: 'car-small',
+  NAV: 'navigation-page',
+  BUTTON: 'button',
 };
 
 const TITLE_TEXT = 'Winners';
 const PAGE = 'page';
+const PREV = 'prev';
+const NEXT = 'next';
+
+const ITEM_PER_PAGE = 7;
 
 const tableHeader = ['Number', 'Car', 'Name', 'Wins', 'Best time (seconds)'];
 
 export default class WinnersView extends View {
+  private currentPage: number;
+
   constructor() {
     const params = {
       tag: 'div',
@@ -30,16 +38,22 @@ export default class WinnersView extends View {
     };
     super(params);
     this.configureView();
+    this.currentPage = 1;
   }
 
   private async configureView(): Promise<void> {
     const serverQuery = new ServerQuery();
-    const countWinners = await serverQuery.getCountWinners();
+    // const countWinners = await serverQuery.getCountWinners();
+
+    const winners: IWinnerResponse = await serverQuery.getWinners([
+      { key: '_page', value: this.currentPage },
+      { key: '_limit', value: ITEM_PER_PAGE },
+    ]);
 
     const paramsTitle = {
       tag: 'h2',
       className: [cssClasses.TITILE],
-      textContent: `${TITLE_TEXT} ${countWinners}`,
+      textContent: `${TITLE_TEXT} ${winners.count}`,
     };
     const creatorTitle = new ElementCreator(paramsTitle);
     this.elementCreator.addInnerElement(creatorTitle);
@@ -47,7 +61,7 @@ export default class WinnersView extends View {
     const paramsPage = {
       tag: 'h3',
       className: [cssClasses.SUBTITLE],
-      textContent: PAGE,
+      textContent: `${PAGE} ${this.currentPage} / ${Math.ceil(winners.count / ITEM_PER_PAGE)}`,
     };
     const creatorSubtitle = new ElementCreator(paramsPage);
     this.elementCreator.addInnerElement(creatorSubtitle);
@@ -83,10 +97,8 @@ export default class WinnersView extends View {
     const scoreList = new ElementCreator(paramsScoreList);
     scoreTable.addInnerElement(scoreList);
 
-    const winners: IWinner[] = await serverQuery.getWinners();
-
-    winners.forEach(async (winner, index) => {
-      const car: ICar = await serverQuery.getCar(winner.id);
+    winners.data.forEach(async (winner, index) => {
+      const car: ICar = await serverQuery.getCar(Number(winner.id));
 
       const paramsScoreItem = {
         tag: 'li',
@@ -137,5 +149,53 @@ export default class WinnersView extends View {
       scoreItem.addInnerElement(scoreItemWins);
       scoreItem.addInnerElement(scoreItemTime);
     });
+    const paramsNav = {
+      tag: 'nav',
+      className: [cssClasses.NAV],
+    };
+
+    const creatorNav = new ElementCreator(paramsNav);
+    this.elementCreator.addInnerElement(creatorNav);
+
+    const paramsButtonPrev = {
+      tag: 'div',
+      className: [cssClasses.BUTTON],
+      textContent: PREV,
+      callback: (): void => {
+        if (this.currentPage <= 1) {
+          this.currentPage = 1;
+        } else {
+          this.currentPage -= 1;
+          this.setContent();
+        }
+      },
+    };
+    const buttonPrev = new ElementCreator(paramsButtonPrev);
+    creatorNav.addInnerElement(buttonPrev);
+
+    const paramsButtonNext = {
+      tag: 'div',
+      className: [cssClasses.BUTTON],
+      textContent: NEXT,
+      callback: (): void => {
+        if (this.currentPage >= Math.ceil(winners.count / ITEM_PER_PAGE)) {
+          this.currentPage = Math.ceil(winners.count / ITEM_PER_PAGE);
+        } else {
+          this.currentPage += 1;
+          this.setContent();
+        }
+      },
+    };
+    const buttonNext = new ElementCreator(paramsButtonNext);
+    creatorNav.addInnerElement(buttonNext);
+  }
+
+  public setContent(): void {
+    const currentElement = this.elementCreator.getElement();
+
+    while (currentElement?.firstElementChild) {
+      currentElement.firstElementChild.remove();
+    }
+    this.configureView();
   }
 }

@@ -17,3 +17,10 @@
 .navigation__item-active {
   background-color: green;
 }
+
+.navigation-page {
+  margin-top: 20px;
+  width: 120px;
+  display: flex;
+  justify-content: space-between;
+}

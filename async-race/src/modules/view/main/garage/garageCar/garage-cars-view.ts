@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ICar } from '../../../../types/types';
+import { ICar, ICarResponse } from '../../../../types/types';
 import ElementCreator from '../../../../utils/element-creator';
 import ServerQuery from '../../../../utils/server-query';
 import View from '../../../view';
@@ -11,13 +11,21 @@ const cssClasses = {
   GARAGE: 'garage__cars',
   TITILE: 'title',
   SUBTITLE: 'subtitle',
+  NAV: 'navigation-page',
+  BUTTON: 'button',
 };
 
 const TITLE_TEXT = 'garage';
 const PAGE = 'page';
+const PREV = 'prev';
+const NEXT = 'next';
+
+const ITEM_PER_PAGE = 2;
 
 export default class GarageCarsView extends View {
   public selectedCar: ICar[];
+
+  private currentPage: number;
 
   constructor() {
     const params = {
@@ -29,16 +37,22 @@ export default class GarageCarsView extends View {
     // this.configureSettingView();
     this.configureView();
     this.selectedCar = [];
+    this.currentPage = 1;
   }
 
   private async configureView(): Promise<void> {
     const serverQuery = new ServerQuery();
-    const countCars = await serverQuery.getCountCars();
+    // const countCars = await serverQuery.getCountCars();
+
+    const cars: ICarResponse = await serverQuery.getCars([
+      { key: '_page', value: this.currentPage },
+      { key: '_limit', value: ITEM_PER_PAGE },
+    ]);
 
     const paramsTitle = {
       tag: 'h2',
       className: [cssClasses.TITILE],
-      textContent: `${TITLE_TEXT} ${countCars}`,
+      textContent: `${TITLE_TEXT} ${cars.count}`,
     };
     const creatorTitle = new ElementCreator(paramsTitle);
     this.elementCreator.addInnerElement(creatorTitle);
@@ -46,14 +60,12 @@ export default class GarageCarsView extends View {
     const paramsPage = {
       tag: 'h3',
       className: [cssClasses.SUBTITLE],
-      textContent: PAGE,
+      textContent: `${PAGE} ${this.currentPage} / ${Math.ceil(cars.count / ITEM_PER_PAGE)}`,
     };
     const creatorSubtitle = new ElementCreator(paramsPage);
     this.elementCreator.addInnerElement(creatorSubtitle);
 
-    const cars: ICar[] = await serverQuery.getCars();
-
-    cars.forEach((car) => {
+    cars.data.forEach((car) => {
       const track = new TrackView(car);
       const selectOneCarCallback = (): void => {
         this.getSelectedCar(car);
@@ -67,6 +79,46 @@ export default class GarageCarsView extends View {
         this.elementCreator.addInnerElement(htmlTrack);
       }
     });
+
+    const paramsNav = {
+      tag: 'nav',
+      className: [cssClasses.NAV],
+    };
+
+    const creatorNav = new ElementCreator(paramsNav);
+    this.elementCreator.addInnerElement(creatorNav);
+
+    const paramsButtonPrev = {
+      tag: 'div',
+      className: [cssClasses.BUTTON],
+      textContent: PREV,
+      callback: (): void => {
+        if (this.currentPage <= 1) {
+          this.currentPage = 1;
+        } else {
+          this.currentPage -= 1;
+          this.setContent();
+        }
+      },
+    };
+    const buttonPrev = new ElementCreator(paramsButtonPrev);
+    creatorNav.addInnerElement(buttonPrev);
+
+    const paramsButtonNext = {
+      tag: 'div',
+      className: [cssClasses.BUTTON],
+      textContent: NEXT,
+      callback: (): void => {
+        if (this.currentPage >= Math.ceil(cars.count / ITEM_PER_PAGE)) {
+          this.currentPage = Math.ceil(cars.count / ITEM_PER_PAGE);
+        } else {
+          this.currentPage += 1;
+          this.setContent();
+        }
+      },
+    };
+    const buttonNext = new ElementCreator(paramsButtonNext);
+    creatorNav.addInnerElement(buttonNext);
   }
 
   public setContent(): void {
@@ -82,12 +134,4 @@ export default class GarageCarsView extends View {
     console.log(car);
     return car;
   }
-
-  // private configureSettingView(): void {
-  //   const settings = new CarSettingView();
-  //   const htmlSettings = settings.getHTMLElement();
-  //   if (htmlSettings instanceof HTMLElement) {
-  //     this.elementCreator.addInnerElement(htmlSettings);
-  //   }
-  // }
 }

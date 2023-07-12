@@ -32,10 +32,25 @@ export interface ICar {
   id?: number;
 }
 
+export interface ICarResponse {
+  data: ICar[];
+  count: number | 0;
+}
+
 export interface IWinner {
   id: number;
   wins: string;
   time: string;
+}
+
+export interface IWinnerResponse {
+  data: IWinner[];
+  count: number | 0;
+}
+
+export interface IQueryParams {
+  key?: string;
+  value?: number;
 }
 
 // export interface ICarResponse {

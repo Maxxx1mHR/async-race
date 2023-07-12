@@ -1,4 +1,4 @@
-import { ICar } from '../types/types';
+import { ICar, ICarResponse, IQueryParams, IWinnerResponse } from '../types/types';
 
 const baseUrl = 'http://localhost:3000';
 
@@ -7,17 +7,21 @@ const path = {
   winners: '/winners',
 };
 
-export default class ServerQuery {
-  public async getCountCars<T>(): Promise<T> {
-    const response = await fetch(`${baseUrl}${path.garage}`);
-    const data = await response.json();
-    return data.length;
-  }
+const generateQueryString = (queryParams: IQueryParams[] = []): string =>
+  queryParams.length ? `?${queryParams.map((x: IQueryParams) => `${x.key}=${x.value}`).join('&')}` : '';
 
-  public async getCars<T>(): Promise<T> {
-    const response = await fetch(`${baseUrl}${path.garage}`);
+export default class ServerQuery {
+  // public async getCountCars<T>(): Promise<T> {
+  //   const response = await fetch(`${baseUrl}${path.garage}`);
+  //   const data = await response.json();
+  //   return data.length;
+  // }
+
+  public async getCars(queryParams: IQueryParams[]): Promise<ICarResponse> {
+    const response = await fetch(`${baseUrl}${path.garage}${generateQueryString(queryParams)}`);
     const data = await response.json();
-    return data;
+    const count = Number(response.headers.get('X-Total-Count'));
+    return { data, count };
   }
 
   public async getCar<T>(id: number): Promise<T> {
@@ -38,15 +42,16 @@ export default class ServerQuery {
     return data;
   }
 
-  public async getCountWinners<T>(): Promise<T> {
-    const response = await fetch(`${baseUrl}${path.winners}`);
-    const data = await response.json();
-    return data.length;
-  }
+  // public async getCountWinners<T>(): Promise<T> {
+  //   const response = await fetch(`${baseUrl}${path.winners}`);
+  //   const data = await response.json();
+  //   return data.length;
+  // }
 
-  public async getWinners<T>(): Promise<T> {
-    const response = await fetch(`${baseUrl}${path.winners}`);
+  public async getWinners(queryParams: IQueryParams[]): Promise<IWinnerResponse> {
+    const response = await fetch(`${baseUrl}${path.winners}${generateQueryString(queryParams)}`);
     const data = await response.json();
-    return data;
+    const count = Number(response.headers.get('X-Total-Count'));
+    return { data, count };
   }
 }
