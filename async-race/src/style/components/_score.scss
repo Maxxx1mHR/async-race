@@ -1,0 +1,32 @@
+.score__table {
+  // width: 400px;
+
+  border-radius: 9px;
+
+  background-color: rgb(54, 76, 86);
+  border: 2px solid #fff;
+}
+
+.score__header-table {
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 3px solid rgb(22, 43, 53);
+  margin-bottom: 10px;
+}
+.score__header-name {
+  width: 80px;
+}
+
+.score__item {
+  padding: 0 10px;
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #fff;
+  margin-bottom: 5px;
+}
+
+.score__item-car {
+  width: 80px;
+}

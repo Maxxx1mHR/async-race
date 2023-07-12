@@ -9,8 +9,8 @@ import TrackView from './track/track-view';
 
 const cssClasses = {
   GARAGE: 'garage__cars',
-  TITILE: 'garage__title',
-  SUBTITLE: 'garage__subtitle',
+  TITILE: 'title',
+  SUBTITLE: 'subtitle',
 };
 
 const TITLE_TEXT = 'garage';
@@ -38,7 +38,7 @@ export default class GarageCarsView extends View {
     const paramsTitle = {
       tag: 'h2',
       className: [cssClasses.TITILE],
-      textContent: `${TITLE_TEXT}${countCars}`,
+      textContent: `${TITLE_TEXT} ${countCars}`,
     };
     const creatorTitle = new ElementCreator(paramsTitle);
     this.elementCreator.addInnerElement(creatorTitle);

@@ -32,6 +32,12 @@ export interface ICar {
   id?: number;
 }
 
+export interface IWinner {
+  id: number;
+  wins: string;
+  time: string;
+}
+
 // export interface ICarResponse {
 //   garage: ICar[];
 // }

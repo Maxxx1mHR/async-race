@@ -34,7 +34,7 @@ export default class CarSettingView extends View {
     this.configureView(garageCarsView);
   }
 
-  private configureView(garageCarsView: GarageCarsView): void {
+  private async configureView(garageCarsView: GarageCarsView): Promise<void> {
     const serverQuery = new ServerQuery();
     const paramsCustomizeCreate = {
       tag: 'div',
@@ -81,8 +81,8 @@ export default class CarSettingView extends View {
       tag: 'div',
       className: [cssClasses.BUTTON],
       textContent: CREATE,
-      callback: (): void => {
-        serverQuery.createCar({
+      callback: async (): Promise<void> => {
+        await serverQuery.createCar({
           name: testFunc()[0],
           color: testFunc()[1],
         });
