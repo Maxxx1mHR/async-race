@@ -24,22 +24,28 @@ export default class ServerQuery {
     return { data, count };
   }
 
-  public async getCar<T>(id: number): Promise<T> {
+  public async getCar(id: number): Promise<ICar> {
     const response = await fetch(`${baseUrl}${path.garage}/${id}`);
     const data = await response.json();
     return data;
   }
 
-  public async createCar<T>(car: ICar): Promise<T> {
-    const response = await fetch(`${baseUrl}${path.garage}`, {
+  public async createCar(car: ICar): Promise<void> {
+    await fetch(`${baseUrl}${path.garage}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(car),
     });
-    const data = await response.json();
-    return data;
+    // const data = await response.json();
+    // return data;
+  }
+
+  public async deleteCar(id: number): Promise<void> {
+    await fetch(`${baseUrl}${path.garage}/${id}`, {
+      method: 'DELETE',
+    });
   }
 
   // public async getCountWinners<T>(): Promise<T> {
@@ -53,5 +59,11 @@ export default class ServerQuery {
     const data = await response.json();
     const count = Number(response.headers.get('X-Total-Count'));
     return { data, count };
+  }
+
+  public async deleteWinner(id: number): Promise<void> {
+    await fetch(`${baseUrl}${path.winners}/${id}`, {
+      method: 'DELETE',
+    });
   }
 }

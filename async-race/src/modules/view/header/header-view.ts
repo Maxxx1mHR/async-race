@@ -49,10 +49,10 @@ export default class HeaderView extends View {
       if (htmlLinkElement instanceof HTMLElement) {
         creatorNav.addInnerElement(htmlLinkElement);
       }
-      this.linkElements.push(linkElement);
-      if (index === START_PAGE_INDEX) {
-        linkElement.setSelectedStatus();
-      }
+      // this.linkElements.push(linkElement);
+      // if (index === START_PAGE_INDEX) {
+      //   linkElement.setSelectedStatus();
+      // }
     });
   }
 

@@ -83,6 +83,7 @@ export default class CarSettingView extends View {
       textContent: CREATE,
       callback: async (): Promise<void> => {
         await serverQuery.createCar({
+          id: 0,
           name: testFunc()[0],
           color: testFunc()[1],
         });
@@ -96,9 +97,8 @@ export default class CarSettingView extends View {
       className: [cssClasses.BUTTON],
       textContent: UPDATE,
       callback: (): void => {
-        console.log('car-setting-view', garageCarsView.selectedCar);
-
-        console.log('update');
+        // console.log('car-setting-view', garageCarsView.selectedCar);
+        // console.log('update');
       },
     };
     const buttonUpdate = new ElementCreator(paramsButtonUpdate);

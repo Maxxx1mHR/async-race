@@ -1,7 +1,7 @@
 import ElementCreator from '../../../../../utils/element-creator';
 import View from '../../../../view';
 import img_finish from '../../../../../../assets/img/finish.png';
-import { ICar } from '../../../../../types/types';
+import { IButton, ICar } from '../../../../../types/types';
 
 const img = new Image();
 
@@ -20,29 +20,33 @@ const cssClasses = {
   BUTTON: 'button',
 };
 
-const SELECT = 'select';
-const REMOVE = 'remove';
-const START = 'start';
-const STOP = 'stop';
+// const SELECT = 'select';
+// const REMOVE = 'remove';
+// const START = 'start';
+// const STOP = 'stop';
 
 export default class TrackView extends View {
   private car: ICar;
 
-  private callback: CallableFunction | null;
+  // private callback: CallableFunction | null;
 
-  constructor(car: ICar) {
+  private buttons: IButton[];
+
+  constructor(car: ICar, buttons: IButton[]) {
     const params = {
       tag: 'div',
       className: [cssClasses.TRACK],
     };
     super(params);
 
-    this.callback = null;
+    // this.callback = null;
+    this.buttons = buttons;
     this.car = car;
     this.configureView();
   }
 
   private configureView(): void {
+    // console.log(this.buttons);
     const paramsTrackSettingModification = {
       tag: 'div',
       className: [cssClasses.TRACK_SETTING_MODIFICATION],
@@ -53,8 +57,9 @@ export default class TrackView extends View {
     const paramsSelect = {
       tag: 'div',
       className: [cssClasses.SELECT, cssClasses.BUTTON],
-      textContent: SELECT,
-      callback: this.buttonClickHandler.bind(this),
+      textContent: this.buttons[0].name,
+      // callback: this.buttonClickHandler.bind(this),
+      callback: this.buttons[0].callback,
     };
     const select = new ElementCreator(paramsSelect);
     trackSettingModification.addInnerElement(select);
@@ -62,7 +67,9 @@ export default class TrackView extends View {
     const paramsRemove = {
       tag: 'div',
       className: [cssClasses.REMOVE, cssClasses.BUTTON],
-      textContent: REMOVE,
+      textContent: this.buttons[1].name,
+      callback: this.buttons[1].callback,
+      // callback: () => console.log('123', this),
     };
     const remove = new ElementCreator(paramsRemove);
     trackSettingModification.addInnerElement(remove);
@@ -93,7 +100,8 @@ export default class TrackView extends View {
     const paramsStart = {
       tag: 'div',
       className: [cssClasses.START, cssClasses.BUTTON],
-      textContent: START,
+      textContent: this.buttons[2].name,
+      callback: this.buttons[2].callback,
     };
     const start = new ElementCreator(paramsStart);
     trackSettingAction.addInnerElement(start);
@@ -101,7 +109,8 @@ export default class TrackView extends View {
     const paramsStop = {
       tag: 'div',
       className: [cssClasses.STOP, cssClasses.BUTTON],
-      textContent: STOP,
+      textContent: this.buttons[3].name,
+      callback: this.buttons[3].callback,
     };
     const stop = new ElementCreator(paramsStop);
     trackSettingAction.addInnerElement(stop);
@@ -126,15 +135,24 @@ export default class TrackView extends View {
     trackWrapper.addInnerElement(finish);
   }
 
-  public setCallback(callback: CallableFunction): void {
-    if (typeof callback === 'function') {
-      this.callback = callback;
+  public setContent(): void {
+    const currentElement = this.elementCreator.getElement();
+
+    while (currentElement?.firstElementChild) {
+      currentElement.firstElementChild.remove();
     }
+    // this.configureView();
   }
 
-  private buttonClickHandler(): void {
-    if (this.callback) {
-      this.callback();
-    }
-  }
+  // public setCallback(callback: CallableFunction): void {
+  //   if (typeof callback === 'function') {
+  //     this.callback = callback;
+  //   }
+  // }
+
+  // private buttonClickHandler(): void {
+  //   if (this.callback) {
+  //     this.callback();
+  //   }
+  // }
 }

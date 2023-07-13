@@ -3,9 +3,10 @@ import { ICar, ICarResponse } from '../../../../types/types';
 import ElementCreator from '../../../../utils/element-creator';
 import ServerQuery from '../../../../utils/server-query';
 import View from '../../../view';
+import WinnersView from '../../winners/winners-view';
+import TrackView from './track/track-view';
 
 // import CarSettingView from '../customizeCar/car-setting-view';
-import TrackView from './track/track-view';
 
 const cssClasses = {
   GARAGE: 'garage__cars',
@@ -19,6 +20,13 @@ const TITLE_TEXT = 'garage';
 const PAGE = 'page';
 const PREV = 'prev';
 const NEXT = 'next';
+
+const carButtons = {
+  SELECT: 'select',
+  REMOVE: 'remove',
+  START: 'start',
+  STOP: 'stop',
+};
 
 const ITEM_PER_PAGE = 2;
 
@@ -65,15 +73,19 @@ export default class GarageCarsView extends View {
     const creatorSubtitle = new ElementCreator(paramsPage);
     this.elementCreator.addInnerElement(creatorSubtitle);
 
+    // const buttons = this.getButtons();
+    // console.log(buttons);
+
     cars.data.forEach((car) => {
-      const track = new TrackView(car);
-      const selectOneCarCallback = (): void => {
-        this.getSelectedCar(car);
-        this.selectedCar.push(this.getSelectedCar(car));
-        // console.log(car.id);
-        // console.log(car.color);
-      };
-      track.setCallback(selectOneCarCallback);
+      const track = new TrackView(car, this.getButtons(car.id));
+      // console.log(car.id);
+      // const selectOneCarCallback = (): void => {
+      // this.getSelectedCar(car);
+      // this.selectedCar.push(this.getSelectedCar(car));
+      // console.log(car.id);
+      // console.log(car.color);
+      // };
+      // track.setCallback(selectOneCarCallback);
       const htmlTrack = track.getHTMLElement();
       if (htmlTrack instanceof HTMLElement) {
         this.elementCreator.addInnerElement(htmlTrack);
@@ -131,7 +143,38 @@ export default class GarageCarsView extends View {
   }
 
   public getSelectedCar(car: ICar): ICar {
-    console.log(car);
+    // console.log(car);
     return car;
+  }
+
+  private getButtons(carId: number): { name: string; callback: () => void }[] {
+    const serverQuery = new ServerQuery();
+
+    const buttons = [
+      {
+        name: carButtons.SELECT,
+        callback: () => console.log('select'),
+      },
+      {
+        name: carButtons.REMOVE,
+        callback: async (): Promise<void> => {
+          console.log('remove');
+          await serverQuery.deleteCar(carId);
+          await serverQuery.deleteWinner(carId);
+          // console.log('this', tra);
+          this.setContent();
+          // eslint-disable-next-line no-new
+        },
+      },
+      {
+        name: carButtons.START,
+        callback: () => console.log('start'),
+      },
+      {
+        name: carButtons.STOP,
+        callback: () => console.log('stop'),
+      },
+    ];
+    return buttons;
   }
 }

@@ -29,7 +29,7 @@ export interface IButton {
 export interface ICar {
   name: string;
   color: string;
-  id?: number;
+  id: number;
 }
 
 export interface ICarResponse {

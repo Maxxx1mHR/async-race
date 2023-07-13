@@ -37,8 +37,8 @@ export default class WinnersView extends View {
       className: [cssClasses.WINNERS],
     };
     super(params);
-    this.configureView();
     this.currentPage = 1;
+    this.configureView();
   }
 
   private async configureView(): Promise<void> {
