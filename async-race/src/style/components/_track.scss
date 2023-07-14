@@ -1,28 +1,39 @@
 .track {
-  margin-top: 20px;
-}
-
-.track__setting-modification {
-  display: flex;
-  align-items: center;
-  // max-width: 150px;
-  > * {
-    margin-right: 10px;
-  }
-}
-.track__setting-action {
-  display: flex;
-  align-items: center;
-  > * {
-    margin-right: 10px;
-  }
-}
-
-.track__wrapper {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
   border-bottom: dashed white 5px;
+  margin-top: 20px;
+}
+
+.track__setting-buttons {
+  display: flex;
+  align-items: center;
+  max-width: 100px;
+  flex-wrap: wrap;
+  // > * {
+  //   margin-right: 10px;
+  // }
+}
+
+// .track__setting-action {
+//   display: flex;
+//   align-items: center;
+//   > * {
+//     margin-right: 10px;
+//   }
+// }
+
+.track__wrapper {
+  display: flex;
+  // justify-content: space-between;
+  // align-items: flex-end;
+  // border-bottom: dashed white 5px;
+}
+.track__car-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .track__finish {
@@ -30,7 +41,7 @@
   margin-right: 150px;
 }
 
-.car {
+.track__car {
   display: inline-block;
   width: 110px;
   height: 45px;

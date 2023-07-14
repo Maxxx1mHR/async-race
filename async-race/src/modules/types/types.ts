@@ -16,7 +16,7 @@ export interface IPage {
 }
 
 export interface IInput {
-  className: string[];
+  // className: string[];
   type: string;
   value?: string;
 }

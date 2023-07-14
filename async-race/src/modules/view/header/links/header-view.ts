@@ -1,10 +1,10 @@
 // import ElementCreator from '../utils/element-creator';
-import ElementCreator from '../../utils/element-creator';
-import GarageView from '../main/garage/garage-view';
-import MainView from '../main/main-view';
-import WinnersView from '../main/winners/winners-view';
-import View from '../view';
-import LinkNavigationView from './link-navigation-view';
+import ElementCreator from '../../../utils/element-creator';
+import GarageView from '../../main/garage/garage-view';
+import MainView from '../../main/main-view';
+import WinnersView from '../../main/winners/winners-view';
+import View from '../../view';
+import LinkNavigationView from '../link-navigation-view';
 
 const cssClasses = {
   HEADER: 'header',

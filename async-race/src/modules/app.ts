@@ -1,4 +1,4 @@
-import HeaderView from './view/header/header-view';
+import HeaderView from './view/header/links/header-view';
 // import GarageView from './view/main/garage/garage-view';
 import MainView from './view/main/main-view';
 

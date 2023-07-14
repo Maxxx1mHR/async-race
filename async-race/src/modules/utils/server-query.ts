@@ -42,6 +42,18 @@ export default class ServerQuery {
     // return data;
   }
 
+  public async updateCar(id: number, car: ICar): Promise<void> {
+    await fetch(`${baseUrl}${path.garage}/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(car),
+    });
+    // const data = await response.json();
+    // return data;
+  }
+
   public async deleteCar(id: number): Promise<void> {
     await fetch(`${baseUrl}${path.garage}/${id}`, {
       method: 'DELETE',
