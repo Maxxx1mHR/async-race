@@ -12,6 +12,7 @@ const cssClasses = {
   GARAGE_CARS: 'garage__cars',
   SETTING_CREATE: 'settings__create',
   SETTING_UPDATE: 'settings__update',
+  SETTING_GENERATE: 'settings__generate',
   TITILE: 'title',
   SUBTITLE: 'subtitle',
   NAV: 'navigation-page',
@@ -29,6 +30,12 @@ const inputButtons = {
   UPDATE: 'update',
 };
 
+const settingButtons = {
+  RACE: 'race',
+  RESET: 'reset',
+  GENERAGE: 'generate cars',
+};
+
 const TITLE_TEXT = 'garage';
 const PAGE = 'page';
 const PREV = 'prev';
@@ -40,7 +47,42 @@ const carButtons = {
   START: 'start',
   STOP: 'stop',
 };
-const ITEM_PER_PAGE = 2;
+const ITEM_PER_PAGE = 7;
+
+const carMark = [
+  'Porsche',
+  'BMW',
+  'Ford',
+  'KIA',
+  'Hyundai',
+  'Audi',
+  'Mercedes-Benz',
+  'Mitsubishi',
+  'Volkswagen',
+  'Subaru',
+  'Infiniti',
+  'Bugatti',
+  'Lamborghini',
+  'Suzuli',
+  'Mazda',
+];
+const carModel = [
+  'Cayman',
+  'Taycan',
+  'Panamera',
+  'Macan',
+  'Focus',
+  'Camry',
+  'Rio',
+  'Ceed',
+  'Sportage',
+  'Solaris',
+  'Qashqai',
+  'Mulsanne',
+  'Huracan',
+  'Aventador',
+  'Phantom',
+];
 
 export default class GarageView extends View {
   private currentPage: number;
@@ -107,6 +149,23 @@ export default class GarageView extends View {
       });
       createSetting.addInnerElement(element);
     });
+
+    const parammsSettingGenerate = {
+      tag: 'div',
+      className: [cssClasses.SETTING_CREATE],
+    };
+    const createSettingGenerate = new ElementCreator(parammsSettingGenerate);
+    createSetting.addInnerElement(createSettingGenerate);
+
+    const buttonsSetting = this.getSettingButtons();
+    buttonsSetting.forEach((button) => {
+      const buttonElement = new ButtonView(button);
+      const htmlButtonElement = buttonElement.getHTMLElement();
+
+      if (htmlButtonElement instanceof HTMLElement) {
+        createSetting.addInnerElement(htmlButtonElement);
+      }
+    });
   }
 
   private getInputs(): IInput[] {
@@ -132,7 +191,7 @@ export default class GarageView extends View {
           const textValueFromInputCreate = this.linkElements[0].getHTMLElement() as HTMLInputElement;
           const colorValueFromInputCreate = this.linkElements[1].getHTMLElement() as HTMLInputElement;
           await serverQuery.createCar({
-            id: 0,
+            // id: 0,
             name: textValueFromInputCreate.value,
             color: colorValueFromInputCreate.value,
           });
@@ -154,6 +213,47 @@ export default class GarageView extends View {
       },
     ];
     return buttons;
+  }
+
+  private getSettingButtons(): IButton[] {
+    const buttons = [
+      {
+        name: settingButtons.RACE,
+        callback: () => console.log('race'),
+      },
+      {
+        name: settingButtons.RESET,
+        callback: () => console.log('reset'),
+      },
+      {
+        name: settingButtons.GENERAGE,
+        callback: (): void => {
+          // console.log('generate');
+          this.generateCars();
+          this.updateContentGarage();
+        },
+      },
+    ];
+    return buttons;
+  }
+
+  private generateCars(): void {
+    const serverQuery = new ServerQuery();
+    let i = 0;
+    while (i < 100) {
+      const mark = carMark[Math.floor(Math.random() * carMark.length)];
+      const model = carModel[Math.floor(Math.random() * carModel.length)];
+      const color = Math.floor(Math.random() * 16777215)
+        .toString(16)
+        .padStart(6, '0');
+      serverQuery.createCar({
+        // id: 0,
+        name: `${mark} ${model}`,
+        color: `#${color}`,
+      });
+      console.log(mark, model, color);
+      i += 1;
+    }
   }
 
   private async configureGarageCarView(): Promise<void> {
@@ -243,21 +343,16 @@ export default class GarageView extends View {
       {
         name: carButtons.SELECT,
         callback: (): void => {
-          // console.log('select');
-          // console.log(car);
           const textValueFromInputUpdate = this.linkElements[2].getHTMLElement() as HTMLInputElement;
           const colorValueFromInputUpdate = this.linkElements[3].getHTMLElement() as HTMLInputElement;
           textValueFromInputUpdate.value = car.name;
           colorValueFromInputUpdate.value = car.color;
-          // this.selectedCarValue.push(this.test(car));
-          console.log(car.color);
           this.selectedCarValue = car.id;
         },
       },
       {
         name: carButtons.REMOVE,
         callback: async (): Promise<void> => {
-          console.log('remove');
           await serverQuery.deleteCar(car.id);
           await serverQuery.deleteWinner(car.id);
           this.updateContentGarage();

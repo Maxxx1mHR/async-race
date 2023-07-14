@@ -1,4 +1,4 @@
-import { ICar, ICarResponse, IQueryParams, IWinnerResponse } from '../types/types';
+import { ICar, ICarRequest, ICarResponse, IQueryParams, IWinnerResponse } from '../types/types';
 
 const baseUrl = 'http://localhost:3000';
 
@@ -30,7 +30,7 @@ export default class ServerQuery {
     return data;
   }
 
-  public async createCar(car: ICar): Promise<void> {
+  public async createCar(car: ICarRequest): Promise<void> {
     await fetch(`${baseUrl}${path.garage}`, {
       method: 'POST',
       headers: {

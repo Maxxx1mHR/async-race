@@ -32,6 +32,12 @@ export interface ICar {
   id: number;
 }
 
+export interface ICarRequest {
+  name: string;
+  color: string;
+  // id: number;
+}
+
 export interface ICarResponse {
   data: ICar[];
   count: number | 0;
