@@ -91,6 +91,8 @@ export default class GarageView extends View {
 
   private selectedCarValue: number;
 
+  public testCarElement: TrackView[];
+
   constructor() {
     const params = {
       tag: 'div',
@@ -99,6 +101,7 @@ export default class GarageView extends View {
     super(params);
     this.linkElements = [];
     this.selectedCarValue = 0;
+    this.testCarElement = [];
 
     this.configureSettingsView();
     this.configureGarageCarView();
@@ -219,7 +222,7 @@ export default class GarageView extends View {
     const buttons = [
       {
         name: settingButtons.RACE,
-        callback: () => console.log('race'),
+        callback: () => console.log(this, 'race'),
       },
       {
         name: settingButtons.RESET,
@@ -289,6 +292,7 @@ export default class GarageView extends View {
 
     cars.data.forEach((car) => {
       const track = new TrackView(car, this.getCarButtons(car));
+      this.testCarElement.push(track);
 
       const htmlTrack = track.getHTMLElement();
       if (htmlTrack instanceof HTMLElement) {
@@ -358,14 +362,19 @@ export default class GarageView extends View {
           this.updateContentGarage();
         },
       },
-      {
-        name: carButtons.START,
-        callback: () => console.log('start'),
-      },
-      {
-        name: carButtons.STOP,
-        callback: () => console.log('stop'),
-      },
+      // {
+      //   name: carButtons.START,
+      //   callback: (): void => {
+      //     this.startCar(3000);
+      //     this.testCarElement.forEach((item) => console.log(item));
+
+      //     console.log('start');
+      //   },
+      // },
+      // {
+      //   name: carButtons.STOP,
+      //   callback: () => console.log('stop'),
+      // },
     ];
     return buttons;
   }
@@ -381,11 +390,28 @@ export default class GarageView extends View {
     this.configureGarageCarView();
   }
 
-  private test(car: ICar): void {
-    // const textValueFromInputUpdate = this.linkElements[2].getHTMLElement() as HTMLInputElement;
-    // const colorValueFromInputUpdate = this.linkElements[3].getHTMLElement() as HTMLInputElement;
-    // textValueFromInputUpdate.value = car.name;
-    // colorValueFromInputUpdate.value = car.color;
-    // return [car.name, car.color, car.id];
+  private startCar(duration: number): void {
+    const finish = document.querySelector('.track__finish');
+    const car = document.querySelector('.track__car');
+    const framesCount = (duration / 1000) * 60;
+
+    if (finish instanceof HTMLElement && car instanceof HTMLElement) {
+      // console.log(finish.offsetLeft);
+      // console.log(car.offsetLeft);
+
+      // console.log(finish.offsetLeft - car.offsetLeft);
+      // const end = finish.offsetLeft - car.offsetLeft;
+      let current = 0;
+
+      const dx = (finish.offsetLeft - car.offsetLeft) / framesCount;
+      const tick = (): void => {
+        current += dx;
+        car.style.transform = `translateX(${current}px)`;
+        if (current < finish.offsetLeft - 40) {
+          requestAnimationFrame(tick);
+        }
+      };
+      tick();
+    }
   }
 }

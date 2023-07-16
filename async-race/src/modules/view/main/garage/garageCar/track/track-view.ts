@@ -3,6 +3,7 @@ import View from '../../../../view';
 import img_finish from '../../../../../../assets/img/finish.png';
 import { IButton, ICar } from '../../../../../types/types';
 import ButtonView from '../../buttons/button-view';
+import ServerQuery from '../../../../../utils/server-query';
 
 const img = new Image();
 
@@ -18,9 +19,13 @@ const cssClasses = {
 };
 
 export default class TrackView extends View {
-  private car: ICar;
+  public car: ICar;
 
   private buttons: IButton[];
+
+  public createdCar: HTMLElement[];
+
+  public createdFinish: HTMLElement[];
 
   constructor(car: ICar, buttons: IButton[]) {
     const params = {
@@ -31,10 +36,13 @@ export default class TrackView extends View {
 
     this.buttons = buttons;
     this.car = car;
+    this.createdCar = [];
+    this.createdFinish = [];
     this.configureView();
   }
 
   private configureView(): void {
+    // console.log('this', this);
     const paramsTrackWrapper = {
       tag: 'div',
       className: [cssClasses.TRACK_WRAPPER],
@@ -50,6 +58,8 @@ export default class TrackView extends View {
     };
 
     const finish = new ElementCreator(paramsFinish);
+    // console.log('finish', finish.getElement());
+
     this.elementCreator.addInnerElement(finish);
 
     const paramsTrackSettingButtons = {
@@ -67,6 +77,80 @@ export default class TrackView extends View {
         trackSettingButtons.addInnerElement(htmlButtonElement);
       }
     });
+
+    let requestId: number | null = null;
+
+    function startAmination(duration: number, callback: (arg0: number) => void): void {
+      let startAminations: number | null = null;
+
+      requestId = requestAnimationFrame(function measure(times) {
+        if (!startAminations) {
+          startAminations = times;
+        }
+
+        if (startAminations) {
+          const progress = (times - startAminations) / duration;
+
+          callback(progress);
+
+          if (progress < 1) {
+            requestId = requestAnimationFrame(measure);
+          }
+        }
+      });
+    }
+
+    const paramsStartButton = {
+      tag: 'div',
+      className: ['button'],
+      textContent: 'Start',
+      callback: async (): Promise<void> => {
+        const serverQuery = new ServerQuery();
+
+        const finishFlag = document.querySelector('.track__finish');
+
+        const time = await serverQuery.getEngineStatus(this.car.id, 'started');
+
+        if (finishFlag instanceof HTMLElement) {
+          const duration = time.distance / time.velocity;
+          // const distance = 500;
+          const distance = finishFlag.offsetLeft;
+
+          const car = this.createdCar[0];
+
+          startAmination(duration, (progress) => {
+            const translate = progress * distance;
+
+            car.style.transform = `translateX(${translate - 40}px)`;
+          });
+          await serverQuery.getDrive(this.car.id, requestId);
+          if (requestId) {
+            cancelAnimationFrame(requestId);
+          }
+        }
+      },
+    };
+
+    const startButton = new ElementCreator(paramsStartButton);
+    trackSettingButtons.addInnerElement(startButton);
+
+    const paramsStopButton = {
+      tag: 'div',
+      className: ['button'],
+      textContent: 'Stop',
+      callback: async (): Promise<void> => {
+        const serverQuery = new ServerQuery();
+        const time = await serverQuery.getEngineStatus(this.car.id, 'stopped');
+        if (requestId) {
+          cancelAnimationFrame(requestId);
+          const car = this.createdCar[0];
+          car.style.transform = `translateX(${0}px)`;
+        }
+      },
+    };
+
+    const stopButton = new ElementCreator(paramsStopButton);
+    trackSettingButtons.addInnerElement(stopButton);
 
     const paramsCarWrapper = {
       tag: 'div',
@@ -91,6 +175,10 @@ export default class TrackView extends View {
     };
 
     const car = new ElementCreator(paramsCar);
+    const carHtml = car.getElement();
+    if (carHtml) {
+      this.createdCar.push(carHtml);
+    }
     carWrapper.addInnerElement(car);
   }
 
@@ -99,6 +187,27 @@ export default class TrackView extends View {
 
     while (currentElement?.firstElementChild) {
       currentElement.firstElementChild.remove();
+    }
+  }
+
+  private async startCar(duration: number): Promise<void> {
+    const finish = document.querySelector('.track__finish');
+
+    const car = this.createdCar[0];
+    const framesCount = (duration / 1000) * 60;
+
+    if (finish instanceof HTMLElement && car instanceof HTMLElement) {
+      let current = 0;
+
+      const dx = (finish.offsetLeft - car.offsetLeft) / framesCount;
+      const tick = (): void => {
+        current += dx;
+        car.style.transform = `translateX(${current}px)`;
+        if (current < finish.offsetLeft - 40) {
+          requestAnimationFrame(tick);
+        }
+      };
+      tick();
     }
   }
 }

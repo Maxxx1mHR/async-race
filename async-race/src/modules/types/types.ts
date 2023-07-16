@@ -43,6 +43,11 @@ export interface ICarResponse {
   count: number | 0;
 }
 
+export interface ICarResponseEngine {
+  velocity: number;
+  distance: number;
+}
+
 export interface IWinner {
   id: number;
   wins: string;
@@ -56,7 +61,7 @@ export interface IWinnerResponse {
 
 export interface IQueryParams {
   key?: string;
-  value?: number;
+  value?: number | string;
 }
 
 // export interface ICarResponse {

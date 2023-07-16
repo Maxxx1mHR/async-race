@@ -1,10 +1,11 @@
-import { ICar, ICarRequest, ICarResponse, IQueryParams, IWinnerResponse } from '../types/types';
+import { ICar, ICarRequest, ICarResponse, ICarResponseEngine, IQueryParams, IWinnerResponse } from '../types/types';
 
 const baseUrl = 'http://localhost:3000';
 
 const path = {
   garage: '/garage',
   winners: '/winners',
+  engine: '/engine',
 };
 
 const generateQueryString = (queryParams: IQueryParams[] = []): string =>
@@ -77,5 +78,34 @@ export default class ServerQuery {
     await fetch(`${baseUrl}${path.winners}/${id}`, {
       method: 'DELETE',
     });
+  }
+
+  public async getEngineStatus(id: number, status: 'started' | 'stopped'): Promise<ICarResponseEngine> {
+    const response = await fetch(`${baseUrl}${path.engine}/?id=${id}&status=${status}`, {
+      method: 'PATCH',
+    });
+    const data = await response.json();
+    return data;
+  }
+
+  public async getDrive(
+    id: number,
+    requestId: number | null,
+    status = 'drive',
+  ): Promise<ICarResponseEngine | undefined> {
+    const response = await fetch(`${baseUrl}${path.engine}/?id=${id}&status=${status}`, {
+      method: 'PATCH',
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log(data);
+      return data;
+    }
+    console.log(`Ошибка машина ${id} сломалась`, response.status);
+    // if (requestId) {
+    //   cancelAnimationFrame(requestId);
+    // }
+    return undefined;
   }
 }
