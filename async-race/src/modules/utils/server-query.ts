@@ -80,32 +80,25 @@ export default class ServerQuery {
     });
   }
 
-  public async getEngineStatus(id: number, status: 'started' | 'stopped'): Promise<ICarResponseEngine> {
+  public async getEngineStatus(id: number, status: 'started' | 'stopped'): Promise<number[]> {
     const response = await fetch(`${baseUrl}${path.engine}/?id=${id}&status=${status}`, {
       method: 'PATCH',
     });
     const data = await response.json();
-    return data;
+    return [id, data.distance / data.velocity];
   }
 
-  public async getDrive(
-    id: number,
-    requestId: number | null,
-    status = 'drive',
-  ): Promise<ICarResponseEngine | undefined> {
+  public async getDrive(id: number, status = 'drive'): Promise<ICarResponseEngine> {
     const response = await fetch(`${baseUrl}${path.engine}/?id=${id}&status=${status}`, {
       method: 'PATCH',
     });
-
-    if (response.ok) {
-      const data = await response.json();
-      console.log(data);
-      return data;
+    if (response.status === 500) {
+      console.log('Я дальше не поеду', response.status);
     }
-    console.log(`Ошибка машина ${id} сломалась`, response.status);
-    // if (requestId) {
-    //   cancelAnimationFrame(requestId);
-    // }
-    return undefined;
+    if (response.status === 429) {
+      console.log('Не тыкай так часто', response.status);
+    }
+    const data = await response.json();
+    return data;
   }
 }

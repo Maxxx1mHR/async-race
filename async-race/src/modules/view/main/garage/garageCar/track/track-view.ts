@@ -79,7 +79,6 @@ export default class TrackView extends View {
     });
 
     let requestId: number | null = null;
-
     function startAmination(duration: number, callback: (arg0: number) => void): void {
       let startAminations: number | null = null;
 
@@ -112,22 +111,20 @@ export default class TrackView extends View {
         const time = await serverQuery.getEngineStatus(this.car.id, 'started');
 
         if (finishFlag instanceof HTMLElement) {
-          const duration = time.distance / time.velocity;
-          // const distance = 500;
-          const distance = finishFlag.offsetLeft;
+          const duration = time[1];
 
+          const distance = finishFlag.offsetLeft - 40;
           const car = this.createdCar[0];
-
           startAmination(duration, (progress) => {
             const translate = progress * distance;
-
-            car.style.transform = `translateX(${translate - 40}px)`;
+            car.style.transform = `translateX(${translate}px)`;
           });
-          await serverQuery.getDrive(this.car.id, requestId);
+        }
+        await serverQuery.getDrive(this.car.id).catch(() => {
           if (requestId) {
             cancelAnimationFrame(requestId);
           }
-        }
+        });
       },
     };
 

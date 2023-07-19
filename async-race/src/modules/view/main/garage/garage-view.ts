@@ -1,4 +1,4 @@
-import { IButton, ICar, ICarResponse, IInput } from '../../../types/types';
+import { IButton, ICar, ICarResponse, ICarResponseEngine, IInput } from '../../../types/types';
 import ElementCreator from '../../../utils/element-creator';
 import ServerQuery from '../../../utils/server-query';
 import View from '../../view';
@@ -91,7 +91,7 @@ export default class GarageView extends View {
 
   private selectedCarValue: number;
 
-  public testCarElement: TrackView[];
+  public testCarElement: [HTMLElement, number][];
 
   constructor() {
     const params = {
@@ -219,10 +219,119 @@ export default class GarageView extends View {
   }
 
   private getSettingButtons(): IButton[] {
+    // Анимация
+    let requestId: number | null = null;
+    function startAmination(duration: number, callback: (arg0: number) => void): void {
+      let startAminations: number | null = null;
+
+      requestId = requestAnimationFrame(function measure(times) {
+        if (!startAminations) {
+          startAminations = times;
+        }
+
+        if (startAminations) {
+          const progress = (times - startAminations) / duration;
+
+          callback(progress);
+
+          if (progress < 1) {
+            requestId = requestAnimationFrame(measure);
+          }
+        }
+      });
+    }
+
     const buttons = [
       {
         name: settingButtons.RACE,
-        callback: () => console.log(this, 'race'),
+        callback: (): void => {
+          const serverQuery = new ServerQuery();
+
+          const finishFlag = document.querySelector('.track__finish');
+
+          // public testCarElement: [HTMLElement, number][];
+
+          // const startedCar: [Promise<ICarResponseEngine>, HTMLElement, number][] = [];
+          const startedCar: Promise<number[]>[] = [];
+
+          this.testCarElement.forEach(async (item) => {
+            const time = await serverQuery.getEngineStatus(item[1], 'started');
+
+            if (finishFlag instanceof HTMLElement) {
+              const duration = time[1];
+              const distance = finishFlag.offsetLeft - 40;
+              const car = item[0];
+              startAmination(duration, (progress) => {
+                const translate = progress * distance;
+                car.style.transform = `translateX(${translate}px)`;
+              });
+              console.log('startAnimation requestId', requestId);
+            }
+
+            // startedCar.push([time, item[0], item[1]]);
+            // startedCar.push(time);
+
+            await serverQuery.getDrive(item[1]).catch(() => {
+              if (requestId) {
+                console.log('cancelAnimation requestId', requestId);
+                cancelAnimationFrame(requestId);
+              }
+            });
+          });
+
+          // this.testCarElement.forEach(async (item) => {
+          //   await serverQuery
+          //     .getDrive(item[1])
+          //     .then((data) => console.log(data))
+          //     .catch(() => {
+          //       if (requestId) {
+          //         console.log('id сломавшейся машины', item[1]);
+          //         cancelAnimationFrame(requestId);
+          //       }
+          //     });
+          // });
+
+          // Promise.all(startedCar).then((data) => {
+          //   data.forEach(async (item, index) => {
+          //     console.log(item);
+          //     if (finishFlag instanceof HTMLElement) {
+          //       // const duration = time.distance / time.velocity;
+
+          //       // console.log(Math.min(...test));
+          //       const duration = item[1];
+
+          //       const distance = finishFlag.offsetLeft - 40;
+          //       const car = this.testCarElement[index][0];
+          //       startAmination(duration, (progress) => {
+          //         const translate = progress * distance;
+          //         car.style.transform = `translateX(${translate}px)`;
+          //       });
+          //       animationId.push(requestId);
+          //       // console.log('ANIMATION', requestId);
+          //     }
+          //   });
+          //   console.log(animationId);
+
+          //   // this.testCarElement.forEach(async (item, index) => {
+          //   //   console.log('item', item);
+          //   //   if (finishFlag instanceof HTMLElement) {
+          //   //     const duration = data[index].distance / data[index].velocity;
+          //   //     const distance = finishFlag.offsetLeft - 40;
+          //   //     const car = item[0];
+          //   //     startAmination(duration, (progress) => {
+          //   //       const translate = progress * distance;
+          //   //       car.style.transform = `translateX(${translate}px)`;
+          //   //     });
+          //   //   }
+          //   //   await serverQuery.getDrive(item[1]).catch(() => {
+          //   //     if (requestId) {
+          //   //       console.log(item[1]);
+          //   //       cancelAnimationFrame(requestId);
+          //   //     }
+          //   //   });
+          //   // });
+          // });
+        },
       },
       {
         name: settingButtons.RESET,
@@ -290,11 +399,15 @@ export default class GarageView extends View {
     const creatorSubtitle = new ElementCreator(paramsPage);
     createGarageCar.addInnerElement(creatorSubtitle);
 
+    this.testCarElement = [];
     cars.data.forEach((car) => {
+      // console.log('cars', cars);
       const track = new TrackView(car, this.getCarButtons(car));
-      this.testCarElement.push(track);
+
+      this.testCarElement.push([track.createdCar[0], track.car.id]);
 
       const htmlTrack = track.getHTMLElement();
+
       if (htmlTrack instanceof HTMLElement) {
         createGarageCar.addInnerElement(htmlTrack);
       }
