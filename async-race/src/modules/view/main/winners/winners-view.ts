@@ -1,4 +1,4 @@
-import { ICar, IWinner, IWinnerResponse } from '../../../types/types';
+import { ICar, IWinnerResponse } from '../../../types/types';
 import ElementCreator from '../../../utils/element-creator';
 import ServerQuery from '../../../utils/server-query';
 import View from '../../view';
@@ -43,7 +43,6 @@ export default class WinnersView extends View {
 
   private async configureView(): Promise<void> {
     const serverQuery = new ServerQuery();
-    // const countWinners = await serverQuery.getCountWinners();
 
     const winners: IWinnerResponse = await serverQuery.getWinners([
       { key: '_page', value: this.currentPage },

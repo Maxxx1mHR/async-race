@@ -88,15 +88,17 @@ const carModel = [
 export default class GarageView extends View {
   private currentPage: number;
 
-  private linkElements: InputView[];
+  private inputElements: InputView[];
 
   private selectedCarValue: number;
-
-  public testCarElement: [HTMLElement, number][];
 
   public carElements: TrackView[];
 
   private win: WinnersView;
+
+  private carAnimation: null[];
+
+  private settingButtonElements: HTMLElement[];
 
   constructor(winnersView: WinnersView) {
     const params = {
@@ -104,10 +106,12 @@ export default class GarageView extends View {
       className: [cssClasses.GARAGE],
     };
     super(params);
-    this.linkElements = [];
+    this.inputElements = [];
     this.selectedCarValue = 0;
-    this.testCarElement = [];
+
     this.carElements = [];
+    this.carAnimation = [];
+    this.settingButtonElements = [];
 
     this.configureSettingsView();
     this.configureGarageCarView();
@@ -140,23 +144,25 @@ export default class GarageView extends View {
     const buttons = this.getInputButtons();
 
     innerSettingElements.forEach((element, index) => {
-      const buttonElement = new ButtonView(buttons[index]);
-
       inputs.forEach((input) => {
         const inputElement = new InputView(input);
 
-        this.linkElements.push(inputElement);
+        this.inputElements.push(inputElement);
 
         const htmlLinkElement = inputElement.getHTMLElement();
-        const htmlButtonElement = buttonElement.getHTMLElement();
 
         if (htmlLinkElement instanceof HTMLInputElement) {
           element.addInnerElement(htmlLinkElement);
         }
-        if (htmlButtonElement instanceof HTMLElement) {
-          element.addInnerElement(htmlButtonElement);
-        }
       });
+
+      const buttonElement = new ButtonView(buttons[index]);
+      const htmlButtonElement = buttonElement.getHTMLElement();
+      if (htmlButtonElement instanceof HTMLElement) {
+        element.addInnerElement(htmlButtonElement);
+        this.settingButtonElements.push(htmlButtonElement);
+      }
+
       createSetting.addInnerElement(element);
     });
 
@@ -171,6 +177,10 @@ export default class GarageView extends View {
     buttonsSetting.forEach((button) => {
       const buttonElement = new ButtonView(button);
       const htmlButtonElement = buttonElement.getHTMLElement();
+
+      if (htmlButtonElement) {
+        this.settingButtonElements.push(htmlButtonElement);
+      }
 
       if (htmlButtonElement instanceof HTMLElement) {
         createSetting.addInnerElement(htmlButtonElement);
@@ -198,10 +208,10 @@ export default class GarageView extends View {
       {
         name: inputButtons.CREATE,
         callback: async (): Promise<void> => {
-          const textValueFromInputCreate = this.linkElements[0].getHTMLElement() as HTMLInputElement;
-          const colorValueFromInputCreate = this.linkElements[1].getHTMLElement() as HTMLInputElement;
+          console.log(this.settingButtonElements);
+          const textValueFromInputCreate = this.inputElements[0].getHTMLElement() as HTMLInputElement;
+          const colorValueFromInputCreate = this.inputElements[1].getHTMLElement() as HTMLInputElement;
           await serverQuery.createCar({
-            // id: 0,
             name: textValueFromInputCreate.value,
             color: colorValueFromInputCreate.value,
           });
@@ -211,10 +221,9 @@ export default class GarageView extends View {
       {
         name: inputButtons.UPDATE,
         callback: async (): Promise<void> => {
-          const textValueFromInputUpdate = this.linkElements[2].getHTMLElement() as HTMLInputElement;
-          const colorValueFromInputUpdate = this.linkElements[3].getHTMLElement() as HTMLInputElement;
+          const textValueFromInputUpdate = this.inputElements[2].getHTMLElement() as HTMLInputElement;
+          const colorValueFromInputUpdate = this.inputElements[3].getHTMLElement() as HTMLInputElement;
           await serverQuery.updateCar(this.selectedCarValue, {
-            id: 0,
             name: textValueFromInputUpdate.value,
             color: colorValueFromInputUpdate.value,
           });
@@ -227,11 +236,21 @@ export default class GarageView extends View {
 
   private getSettingButtons(): IButton[] {
     let oneCall = true;
+    let i = 0;
+
     const buttons = [
       {
         name: settingButtons.RACE,
 
         callback: (): void => {
+          this.settingButtonElements[0].classList.add('button-disabled');
+          this.settingButtonElements[1].classList.add('button-disabled');
+          this.settingButtonElements[2].classList.add('button-disabled');
+          this.settingButtonElements[3].classList.add('button-disabled');
+          this.settingButtonElements[4].classList.add('button-disabled');
+          this.settingButtonElements[5].classList.add('button-disabled');
+          this.settingButtonElements[6].classList.add('button-disabled');
+
           const serverQuery = new ServerQuery();
 
           const finishFlag = document.querySelector('.track__finish');
@@ -239,14 +258,19 @@ export default class GarageView extends View {
           // public testCarElement: [HTMLElement, number][];
 
           // const startedCar: [Promise<ICarResponseEngine>, HTMLElement, number][] = [];
-          const requestIdArray: (number | null)[] = [];
-          const startedCar: Promise<number[]>[] = [];
-          const startedCarDrive: Promise<ICarResponseEngine>[] = [];
+          // const requestIdArray: (number | null)[] = [];
+          // const startedCar: Promise<number[]>[] = [];
+          // const startedCarDrive: Promise<ICarResponseEngine>[] = [];
 
           this.carElements.forEach(async (item) => {
-            console.log(item);
-            // Анимация
+            item.createdButtons[0].classList.add('button-disabled');
+            item.createdButtons[1].classList.add('button-disabled');
+            item.createdButtons[2].classList.add('button-disabled');
+            item.createdButtons[3].classList.add('button-disabled');
+            // console.log(item);
+            // // Анимация
             let requestId: number | null = null;
+
             function startAmination(duration: number, callback: (arg0: number) => void): void {
               let startAminations: number | null = null;
 
@@ -269,6 +293,8 @@ export default class GarageView extends View {
 
             const time = await serverQuery.getEngineStatus(item.car.id, 'started');
 
+            // console.log(time);
+
             if (finishFlag instanceof HTMLElement) {
               const duration = time[1];
               const distance = finishFlag.offsetLeft - 40;
@@ -290,6 +316,7 @@ export default class GarageView extends View {
                 await serverQuery.getWinner(item.car.id).then(async (data) => {
                   // console.log('Текущая машина', item.car, 'Время', time[1]);
                   // console.log('Данные из бд', data);
+                  i += 1;
                   if (oneCall) {
                     if (data.id !== item.car.id) {
                       await serverQuery.createWinner({
@@ -315,73 +342,32 @@ export default class GarageView extends View {
               })
               .catch(() => {
                 if (requestId) {
+                  i += 1;
                   cancelAnimationFrame(requestId);
                 }
               });
+            if (this.carElements.length === i) {
+              this.settingButtonElements[3].classList.remove('button-disabled');
+              console.log(i);
+            }
           });
-
-          // this.testCarElement.forEach((item) => {
-          //   const test = serverQuery.getDrive(item[1]);
-          //   startedCarDrive.push(test);
-          // });
-
-          // this.testCarElement.forEach(async (item) => {
-          //   await serverQuery
-          //     .getDrive(item[1])
-          //     .then((data) => console.log(data))
-          //     .catch(() => {
-          //       if (requestId) {
-          //         console.log('id сломавшейся машины', item[1]);
-          //         cancelAnimationFrame(requestId);
-          //       }
-          //     });
-          // });
-
-          // Promise.all(startedCar).then((data) => {
-          //   data.forEach(async (item, index) => {
-          //     console.log(item);
-          //     if (finishFlag instanceof HTMLElement) {
-          //       // const duration = time.distance / time.velocity;
-
-          //       // console.log(Math.min(...test));
-          //       const duration = item[1];
-
-          //       const distance = finishFlag.offsetLeft - 40;
-          //       const car = this.testCarElement[index][0];
-          //       startAmination(duration, (progress) => {
-          //         const translate = progress * distance;
-          //         car.style.transform = `translateX(${translate}px)`;
-          //       });
-          //       // animationId.push(requestId);
-          //       // console.log('ANIMATION', requestId);
-          //     }
-          //   });
-          //   //   console.log(animationId);
-
-          //   //   // this.testCarElement.forEach(async (item, index) => {
-          //   //   //   console.log('item', item);
-          //   //   //   if (finishFlag instanceof HTMLElement) {
-          //   //   //     const duration = data[index].distance / data[index].velocity;
-          //   //   //     const distance = finishFlag.offsetLeft - 40;
-          //   //   //     const car = item[0];
-          //   //   //     startAmination(duration, (progress) => {
-          //   //   //       const translate = progress * distance;
-          //   //   //       car.style.transform = `translateX(${translate}px)`;
-          //   //   //     });
-          //   //   //   }
-          //   //   //   await serverQuery.getDrive(item[1]).catch(() => {
-          //   //   //     if (requestId) {
-          //   //   //       console.log(item[1]);
-          //   //   //       cancelAnimationFrame(requestId);
-          //   //   //     }
-          //   //   //   });
-          //   //   // });
-          // });
         },
       },
       {
         name: settingButtons.RESET,
-        callback: () => console.log('reset'),
+        callback: (): void => {
+          const serverQuery = new ServerQuery();
+          // console.log(this.carAnimation);
+          this.carElements.forEach(async (carElements) => {
+            await serverQuery.getEngineStatus(carElements.car.id, 'stopped');
+            // if (requestId) {
+            // cancelAnimationFrame(requestId);
+            // }
+
+            const car = carElements.createdCar[0];
+            car.style.transform = `translateX(${0}px)`;
+          });
+        },
       },
       {
         name: settingButtons.GENERAGE,
@@ -392,6 +378,7 @@ export default class GarageView extends View {
         },
       },
     ];
+
     return buttons;
   }
 
@@ -405,11 +392,9 @@ export default class GarageView extends View {
         .toString(16)
         .padStart(6, '0');
       serverQuery.createCar({
-        // id: 0,
         name: `${mark} ${model}`,
         color: `#${color}`,
       });
-      console.log(mark, model, color);
       i += 1;
     }
   }
@@ -445,7 +430,9 @@ export default class GarageView extends View {
     const creatorSubtitle = new ElementCreator(paramsPage);
     createGarageCar.addInnerElement(creatorSubtitle);
 
-    this.testCarElement = [];
+    // this.testCarElement = [];
+    this.carElements = [];
+
     cars.data.forEach((car) => {
       // console.log('cars', cars);
       const track = new TrackView(car, this.getCarButtons(car));
@@ -481,6 +468,10 @@ export default class GarageView extends View {
       },
     };
     const buttonPrev = new ElementCreator(paramsButtonPrev);
+    const htmlbuttonPrev = buttonPrev.getElement();
+    if (htmlbuttonPrev) {
+      this.settingButtonElements.push(htmlbuttonPrev);
+    }
     creatorNav.addInnerElement(buttonPrev);
 
     const paramsButtonNext = {
@@ -497,6 +488,10 @@ export default class GarageView extends View {
       },
     };
     const buttonNext = new ElementCreator(paramsButtonNext);
+    const htmlbuttonNext = buttonNext.getElement();
+    if (htmlbuttonNext) {
+      this.settingButtonElements.push(htmlbuttonNext);
+    }
     creatorNav.addInnerElement(buttonNext);
   }
 
@@ -507,8 +502,10 @@ export default class GarageView extends View {
       {
         name: carButtons.SELECT,
         callback: (): void => {
-          const textValueFromInputUpdate = this.linkElements[2].getHTMLElement() as HTMLInputElement;
-          const colorValueFromInputUpdate = this.linkElements[3].getHTMLElement() as HTMLInputElement;
+          // console.log(this.selectedCarValue);
+          // console.log(this.linkElements);
+          const textValueFromInputUpdate = this.inputElements[2].getHTMLElement() as HTMLInputElement;
+          const colorValueFromInputUpdate = this.inputElements[3].getHTMLElement() as HTMLInputElement;
           textValueFromInputUpdate.value = car.name;
           colorValueFromInputUpdate.value = car.color;
           this.selectedCarValue = car.id;
@@ -525,12 +522,7 @@ export default class GarageView extends View {
       },
       // {
       //   name: carButtons.START,
-      //   callback: (): void => {
-      //     this.startCar(3000);
-      //     this.testCarElement.forEach((item) => console.log(item));
-
-      //     console.log('start');
-      //   },
+      //   callback: () => console.log('start'),
       // },
       // {
       //   name: carButtons.STOP,

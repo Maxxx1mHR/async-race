@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import {
   ICar,
   ICarRequest,
@@ -20,12 +21,6 @@ const generateQueryString = (queryParams: IQueryParams[] = []): string =>
   queryParams.length ? `?${queryParams.map((x: IQueryParams) => `${x.key}=${x.value}`).join('&')}` : '';
 
 export default class ServerQuery {
-  // public async getCountCars<T>(): Promise<T> {
-  //   const response = await fetch(`${baseUrl}${path.garage}`);
-  //   const data = await response.json();
-  //   return data.length;
-  // }
-
   public async getCars(queryParams: IQueryParams[]): Promise<ICarResponse> {
     const response = await fetch(`${baseUrl}${path.garage}${generateQueryString(queryParams)}`);
     const data = await response.json();
@@ -47,11 +42,9 @@ export default class ServerQuery {
       },
       body: JSON.stringify(car),
     });
-    // const data = await response.json();
-    // return data;
   }
 
-  public async updateCar(id: number, car: ICar): Promise<void> {
+  public async updateCar(id: number, car: ICarRequest): Promise<void> {
     await fetch(`${baseUrl}${path.garage}/${id}`, {
       method: 'PUT',
       headers: {
@@ -59,8 +52,6 @@ export default class ServerQuery {
       },
       body: JSON.stringify(car),
     });
-    // const data = await response.json();
-    // return data;
   }
 
   public async deleteCar(id: number): Promise<void> {
@@ -68,12 +59,6 @@ export default class ServerQuery {
       method: 'DELETE',
     });
   }
-
-  // public async getCountWinners<T>(): Promise<T> {
-  //   const response = await fetch(`${baseUrl}${path.winners}`);
-  //   const data = await response.json();
-  //   return data.length;
-  // }
 
   public async getEngineStatus(id: number, status: 'started' | 'stopped'): Promise<number[]> {
     const response = await fetch(`${baseUrl}${path.engine}/?id=${id}&status=${status}`, {
@@ -118,20 +103,10 @@ export default class ServerQuery {
       },
       body: JSON.stringify(winner),
     });
-    // const data = await response.json();
-    // return data;
   }
 
   public async getWinner(id: number): Promise<IWinner> {
     const response = await fetch(`${baseUrl}${path.winners}/${id}`);
-    // if (response.status === 404) {
-    //   await this.createWinner({
-    //     wins: '1',
-    //     time: timeRace,
-    //   });
-    // } else {
-    //   console.log('Такая машина уже есть в базе');
-    // }
     const data = await response.json();
     return data;
   }
@@ -144,7 +119,5 @@ export default class ServerQuery {
       },
       body: JSON.stringify(winner),
     });
-    // const data = await response.json();
-    // return data;
   }
 }

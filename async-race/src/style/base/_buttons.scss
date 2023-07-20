@@ -8,3 +8,8 @@
   color: #ffffff;
   cursor: pointer;
 }
+
+.button-disabled {
+  background-color: #878787;
+  pointer-events: none;
+}

@@ -1,10 +1,10 @@
 // import ElementCreator from '../utils/element-creator';
-import ElementCreator from '../../../utils/element-creator';
-import GarageView from '../../main/garage/garage-view';
-import MainView from '../../main/main-view';
-import WinnersView from '../../main/winners/winners-view';
-import View from '../../view';
-import LinkNavigationView from '../link-navigation-view';
+import ElementCreator from '../../utils/element-creator';
+import GarageView from '../main/garage/garage-view';
+import MainView from '../main/main-view';
+import WinnersView from '../main/winners/winners-view';
+import View from '../view';
+import LinkNavigationView from './links/link-navigation-view';
 
 const cssClasses = {
   HEADER: 'header',
@@ -19,7 +19,7 @@ const NamePages = {
 const START_PAGE_INDEX = 0;
 
 export default class HeaderView extends View {
-  private linkElements: LinkNavigationView[];
+  private linkButtons: LinkNavigationView[];
 
   constructor(mainComponent: MainView) {
     const params = {
@@ -28,7 +28,7 @@ export default class HeaderView extends View {
     };
     super(params);
 
-    this.linkElements = [];
+    this.linkButtons = [];
     this.configureView(mainComponent);
   }
 
@@ -44,29 +44,31 @@ export default class HeaderView extends View {
     const pages = this.getPages(mainComponent);
 
     pages.forEach((page, index) => {
-      const linkElement = new LinkNavigationView(page, this.linkElements);
+      const linkElement = new LinkNavigationView(page, this.linkButtons);
       const htmlLinkElement = linkElement.getHTMLElement();
       if (htmlLinkElement instanceof HTMLElement) {
         creatorNav.addInnerElement(htmlLinkElement);
       }
-      // this.linkElements.push(linkElement);
-      // if (index === START_PAGE_INDEX) {
-      //   linkElement.setSelectedStatus();
-      // }
+      this.linkButtons.push(linkElement);
+      if (index === START_PAGE_INDEX) {
+        linkElement.setSelectedStatus();
+      }
     });
   }
 
   private getPages(mainComponent: MainView): { name: string; callback: () => void }[] {
-    const winnersView = new WinnersView();
-    const garageView = new GarageView(winnersView);
+    // const winnersView = new WinnersView();
+    // const garageView = new GarageView(winnersView);
     const pages = [
       {
         name: NamePages.GARAGE,
-        callback: () => mainComponent.setContent(garageView),
+        callback: (): void => {
+          mainComponent.setContent(mainComponent.garageView);
+        },
       },
       {
         name: NamePages.WINNERS,
-        callback: () => mainComponent.setContent(winnersView),
+        callback: () => mainComponent.setContent(mainComponent.winnersView),
       },
     ];
     return pages;
