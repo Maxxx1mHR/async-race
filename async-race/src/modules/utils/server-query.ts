@@ -1,4 +1,12 @@
-import { ICar, ICarRequest, ICarResponse, ICarResponseEngine, IQueryParams, IWinnerResponse } from '../types/types';
+import {
+  ICar,
+  ICarRequest,
+  ICarResponse,
+  ICarResponseEngine,
+  IQueryParams,
+  IWinner,
+  IWinnerResponse,
+} from '../types/types';
 
 const baseUrl = 'http://localhost:3000';
 
@@ -67,19 +75,6 @@ export default class ServerQuery {
   //   return data.length;
   // }
 
-  public async getWinners(queryParams: IQueryParams[]): Promise<IWinnerResponse> {
-    const response = await fetch(`${baseUrl}${path.winners}${generateQueryString(queryParams)}`);
-    const data = await response.json();
-    const count = Number(response.headers.get('X-Total-Count'));
-    return { data, count };
-  }
-
-  public async deleteWinner(id: number): Promise<void> {
-    await fetch(`${baseUrl}${path.winners}/${id}`, {
-      method: 'DELETE',
-    });
-  }
-
   public async getEngineStatus(id: number, status: 'started' | 'stopped'): Promise<number[]> {
     const response = await fetch(`${baseUrl}${path.engine}/?id=${id}&status=${status}`, {
       method: 'PATCH',
@@ -100,5 +95,56 @@ export default class ServerQuery {
     }
     const data = await response.json();
     return data;
+  }
+
+  public async getWinners(queryParams: IQueryParams[]): Promise<IWinnerResponse> {
+    const response = await fetch(`${baseUrl}${path.winners}${generateQueryString(queryParams)}`);
+    const data = await response.json();
+    const count = Number(response.headers.get('X-Total-Count'));
+    return { data, count };
+  }
+
+  public async deleteWinner(id: number): Promise<void> {
+    await fetch(`${baseUrl}${path.winners}/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  public async createWinner(winner: IWinner): Promise<void> {
+    await fetch(`${baseUrl}${path.winners}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(winner),
+    });
+    // const data = await response.json();
+    // return data;
+  }
+
+  public async getWinner(id: number): Promise<IWinner> {
+    const response = await fetch(`${baseUrl}${path.winners}/${id}`);
+    // if (response.status === 404) {
+    //   await this.createWinner({
+    //     wins: '1',
+    //     time: timeRace,
+    //   });
+    // } else {
+    //   console.log('Такая машина уже есть в базе');
+    // }
+    const data = await response.json();
+    return data;
+  }
+
+  public async updateWinner(id: number, winner: IWinner): Promise<void> {
+    await fetch(`${baseUrl}${path.winners}/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(winner),
+    });
+    // const data = await response.json();
+    // return data;
   }
 }

@@ -132,14 +132,14 @@ export default class WinnersView extends View {
       const paramsScoreItemWins = {
         tag: 'span',
         className: [cssClasses.SCORE_ITEM_CAR],
-        textContent: winner.wins,
+        textContent: String(winner.wins),
       };
       const scoreItemWins = new ElementCreator(paramsScoreItemWins);
 
       const paramsScoreItemTime = {
         tag: 'span',
         className: [cssClasses.SCORE_ITEM_CAR],
-        textContent: winner.time,
+        textContent: String(winner.time),
       };
       const scoreItemTime = new ElementCreator(paramsScoreItemTime);
 

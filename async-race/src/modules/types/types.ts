@@ -49,9 +49,9 @@ export interface ICarResponseEngine {
 }
 
 export interface IWinner {
-  id: number;
-  wins: string;
-  time: string;
+  id?: number;
+  wins: number;
+  time: number;
 }
 
 export interface IWinnerResponse {

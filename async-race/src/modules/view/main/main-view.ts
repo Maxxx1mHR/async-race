@@ -1,5 +1,6 @@
 import View from '../view';
 import GarageView from './garage/garage-view';
+import WinnersView from './winners/winners-view';
 
 const cssClasses = {
   MAIN: 'main',
@@ -12,11 +13,13 @@ export default class MainView extends View {
       className: [cssClasses.MAIN],
     };
     super(params);
-    const garageView = new GarageView();
-    const htmlGaragView = garageView.getHTMLElement();
-    if (htmlGaragView instanceof HTMLElement) {
-      this.elementCreator.addInnerElement(htmlGaragView);
-    }
+    const winnersView = new WinnersView();
+
+    // const garageView = new GarageView(winnersView);
+    // const htmlGaragView = garageView.getHTMLElement();
+    // if (htmlGaragView instanceof HTMLElement) {
+    //   this.elementCreator.addInnerElement(htmlGaragView);
+    // }
   }
 
   public setContent(view: View): void {

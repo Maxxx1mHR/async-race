@@ -57,8 +57,8 @@ export default class HeaderView extends View {
   }
 
   private getPages(mainComponent: MainView): { name: string; callback: () => void }[] {
-    const garageView = new GarageView();
     const winnersView = new WinnersView();
+    const garageView = new GarageView(winnersView);
     const pages = [
       {
         name: NamePages.GARAGE,
