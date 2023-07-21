@@ -9,6 +9,12 @@ body {
   // height: 100%;
 }
 
+.modal {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
 // body {
 //   display: flex;
 //   justify-content: space-between;

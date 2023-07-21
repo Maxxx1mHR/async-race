@@ -55,7 +55,7 @@ export default class ElementCreator {
     });
   }
 
-  private setTextContent(text: string): void {
+  public setTextContent(text: string): void {
     if (this.element) {
       this.element.innerHTML = text;
     }

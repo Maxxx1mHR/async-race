@@ -18,6 +18,7 @@ const cssClasses = {
   SUBTITLE: 'subtitle',
   NAV: 'navigation-page',
   BUTTON: 'button',
+  MODAL: 'modal',
 };
 
 const inputTypes = {
@@ -100,6 +101,8 @@ export default class GarageView extends View {
 
   private settingButtonElements: HTMLElement[];
 
+  private creatorModal: ElementCreator | null;
+
   constructor(winnersView: WinnersView) {
     const params = {
       tag: 'div',
@@ -117,6 +120,7 @@ export default class GarageView extends View {
     this.configureGarageCarView();
     this.currentPage = 1;
     this.win = winnersView;
+    this.creatorModal = null;
   }
 
   private configureSettingsView(): void {
@@ -228,6 +232,7 @@ export default class GarageView extends View {
             color: colorValueFromInputUpdate.value,
           });
           this.updateContentGarage();
+          this.win.setContent();
         },
       },
     ];
@@ -235,14 +240,16 @@ export default class GarageView extends View {
   }
 
   private getSettingButtons(): IButton[] {
-    let oneCall = true;
-    let i = 0;
-
     const buttons = [
       {
         name: settingButtons.RACE,
 
         callback: (): void => {
+          let oneCall = true;
+          let i = 0;
+
+          const navButtons = document.querySelectorAll('.navigation__item');
+          navButtons[1]?.classList.add('button-disabled');
           this.settingButtonElements[0].classList.add('button-disabled');
           this.settingButtonElements[1].classList.add('button-disabled');
           this.settingButtonElements[2].classList.add('button-disabled');
@@ -257,105 +264,213 @@ export default class GarageView extends View {
 
           // public testCarElement: [HTMLElement, number][];
 
-          // const startedCar: [Promise<ICarResponseEngine>, HTMLElement, number][] = [];
+          const startedCar: Promise<number[]>[] = [];
           // const requestIdArray: (number | null)[] = [];
           // const startedCar: Promise<number[]>[] = [];
           // const startedCarDrive: Promise<ICarResponseEngine>[] = [];
 
-          this.carElements.forEach(async (item) => {
+          this.carElements.forEach((item) => {
             item.createdButtons[0].classList.add('button-disabled');
             item.createdButtons[1].classList.add('button-disabled');
             item.createdButtons[2].classList.add('button-disabled');
             item.createdButtons[3].classList.add('button-disabled');
             // console.log(item);
             // // Анимация
-            let requestId: number | null = null;
+            // let requestId: number | null = null;
 
-            function startAmination(duration: number, callback: (arg0: number) => void): void {
-              let startAminations: number | null = null;
+            // function startAmination(duration: number, callback: (arg0: number) => void): void {
+            //   let startAminations: number | null = null;
 
-              requestId = requestAnimationFrame(function measure(times) {
-                if (!startAminations) {
-                  startAminations = times;
-                }
+            //   requestId = requestAnimationFrame(function measure(times) {
+            //     if (!startAminations) {
+            //       startAminations = times;
+            //     }
 
-                if (startAminations) {
-                  const progress = (times - startAminations) / duration;
+            //     if (startAminations) {
+            //       const progress = (times - startAminations) / duration;
 
-                  callback(progress);
+            //       callback(progress);
 
-                  if (progress < 1) {
-                    requestId = requestAnimationFrame(measure);
-                  }
-                }
-              });
-            }
+            //       if (progress < 1) {
+            //         requestId = requestAnimationFrame(measure);
+            //       }
+            //     }
+            //   });
+            // }
 
-            const time = await serverQuery.getEngineStatus(item.car.id, 'started');
+            const time = serverQuery.getEngineStatus(item.car.id, 'started');
+            startedCar.push(time);
 
             // console.log(time);
 
-            if (finishFlag instanceof HTMLElement) {
-              const duration = time[1];
-              const distance = finishFlag.offsetLeft - 40;
-              const car = item.createdCar[0];
+            // if (finishFlag instanceof HTMLElement) {
+            //   const duration = time[1];
+            //   const distance = finishFlag.offsetLeft - 40;
+            //   const car = item.createdCar[0];
 
-              startAmination(duration, (progress) => {
-                const translate = progress * distance;
-                car.style.transform = `translateX(${translate}px)`;
-              });
-            }
+            //   startAmination(duration, (progress) => {
+            //     const translate = progress * distance;
+            //     car.style.transform = `translateX(${translate}px)`;
+            //   });
+            // }
 
-            // startedCar.push([time, item[0], item[1]]);
-            // startedCar.push(time);
+            // await serverQuery
+            //   .getDrive(item.car.id)
+            //   .then(async () => {
+            //     await serverQuery.getWinner(item.car.id).then(async (data) => {
+            //       i += 1;
+            //       if (oneCall) {
+            //         if (data.id !== item.car.id) {
+            //           console.log('1');
+            //           await serverQuery.createWinner({
+            //             wins: 1,
+            //             time: Number((time[1] / 1000).toFixed(2)),
+            //           });
+            //         } else if (data.id === item.car.id && data.time <= Number((time[1] / 1000).toFixed(2))) {
+            //           console.log('2');
 
-            await serverQuery
-              .getDrive(item.car.id)
-              .then(async () => {
-                // console.log(`Машина ${item.car.id} доехала за ${time[1] / 1000}`);
-                await serverQuery.getWinner(item.car.id).then(async (data) => {
-                  // console.log('Текущая машина', item.car, 'Время', time[1]);
-                  // console.log('Данные из бд', data);
-                  i += 1;
-                  if (oneCall) {
-                    if (data.id !== item.car.id) {
-                      await serverQuery.createWinner({
-                        wins: 1,
-                        time: Number((time[1] / 1000).toFixed(2)),
-                      });
+            //           await serverQuery.updateWinner(item.car.id, {
+            //             wins: Number(data.wins) + 1,
+            //             time: data.time,
+            //           });
+            //         } else if (data.id === item.car.id && data.time >= Number((time[1] / 1000).toFixed(2))) {
+            //           console.log('3');
+
+            //           await serverQuery.updateWinner(item.car.id, {
+            //             wins: Number(data.wins) + 1,
+            //             time: Number((time[1] / 1000).toFixed(2)),
+            //           });
+            //         }
+            //         this.win.setContent();
+            //         oneCall = false;
+            //       }
+            //     });
+            //   })
+            //   .catch(() => {
+            //     if (requestId) {
+            //       i += 1;
+            //       cancelAnimationFrame(requestId);
+            //     }
+            //   });
+            // if (this.carElements.length === i) {
+            //   this.settingButtonElements[3].classList.remove('button-disabled');
+            // }
+          });
+
+          Promise.all(startedCar).then((data) =>
+            data.forEach(async (item, index) => {
+              console.log(this.carElements);
+              navButtons[1]?.classList.remove('button-disabled');
+
+              let requestId: number | null = null;
+
+              function startAmination(duration: number, callback: (arg0: number) => void): void {
+                let startAminations: number | null = null;
+
+                requestId = requestAnimationFrame(function measure(times) {
+                  if (!startAminations) {
+                    startAminations = times;
+                  }
+
+                  if (startAminations) {
+                    const progress = (times - startAminations) / duration;
+
+                    callback(progress);
+
+                    if (progress < 1) {
+                      requestId = requestAnimationFrame(measure);
                     }
-                    if (data.time <= Number((time[1] / 1000).toFixed(2))) {
-                      await serverQuery.updateWinner(item.car.id, {
-                        wins: Number(data.wins) + 1,
-                        time: data.time,
-                      });
-                    } else {
-                      await serverQuery.updateWinner(item.car.id, {
-                        wins: data.wins + 1,
-                        time: Number((time[1] / 1000).toFixed(2)),
-                      });
-                    }
-                    this.win.setContent();
-                    oneCall = false;
                   }
                 });
-              })
-              .catch(() => {
-                if (requestId) {
-                  i += 1;
-                  cancelAnimationFrame(requestId);
-                }
-              });
-            if (this.carElements.length === i) {
-              this.settingButtonElements[3].classList.remove('button-disabled');
-              console.log(i);
-            }
-          });
+              }
+
+              if (finishFlag instanceof HTMLElement) {
+                const duration = item[1];
+                const distance = finishFlag.offsetLeft - 40;
+                const car = this.carElements[index].createdCar[0];
+
+                startAmination(duration, (progress) => {
+                  const translate = progress * distance;
+                  car.style.transform = `translateX(${translate}px)`;
+                });
+              }
+
+              await serverQuery
+                .getDrive(item[0])
+                .then(async () => {
+                  await serverQuery.getWinner(item[0]).then(async (winner) => {
+                    console.log('item', item);
+                    console.log(winner);
+                    i += 1;
+                    if (oneCall) {
+                      oneCall = false;
+                      if (winner.id !== item[0]) {
+                        console.log('Машина еще не побеждала, записалось 1 победа и время');
+                        await serverQuery.createWinner({
+                          id: item[0],
+                          wins: 1,
+                          time: Number((item[1] / 1000).toFixed(2)),
+                        });
+                        this.win.setContent();
+                      } else if (winner.id === item[0] && winner.time <= Number((item[1] / 1000).toFixed(2))) {
+                        console.log('Машина уже побеждала, записалось +1 победа. Вреия осталось старое');
+                        await serverQuery.updateWinner(item[0], {
+                          id: item[0],
+                          wins: Number(winner.wins) + 1,
+                          time: winner.time,
+                        });
+                        this.win.setContent();
+                      } else if (winner.id === item[0] && winner.time >= Number((item[1] / 1000).toFixed(2))) {
+                        console.log('Машина уже побеждала, записалось +1 победа и обновлено время');
+                        await serverQuery.updateWinner(item[0], {
+                          id: item[0],
+                          wins: Number(winner.wins) + 1,
+                          time: Number((item[1] / 1000).toFixed(2)),
+                        });
+                        this.win.setContent();
+                      }
+                      console.log(this.carElements[index], '-', index, 'время', item[1]);
+                      this.creatorModal?.setTextContent(
+                        `${this.carElements[index].car.name} went first ${Number((item[1] / 1000).toFixed(2))}`,
+                      );
+                      // this.win.setContent();
+
+                      console.log('сработал');
+                    }
+                  });
+                })
+                .catch(() => {
+                  if (requestId) {
+                    i += 1;
+
+                    cancelAnimationFrame(requestId);
+                  }
+                });
+              if (this.carElements.length === i) {
+                this.settingButtonElements[3].classList.remove('button-disabled');
+              }
+            }),
+          );
         },
       },
       {
         name: settingButtons.RESET,
         callback: (): void => {
+          this.creatorModal?.setTextContent('');
+          this.settingButtonElements[0].classList.remove('button-disabled');
+          this.settingButtonElements[1].classList.remove('button-disabled');
+          this.settingButtonElements[2].classList.remove('button-disabled');
+          // this.settingButtonElements[3].classList.add('button-disabled');
+          this.settingButtonElements[4].classList.remove('button-disabled');
+          this.settingButtonElements[5].classList.remove('button-disabled');
+          this.settingButtonElements[6].classList.remove('button-disabled');
+
+          this.carElements.forEach((item) => {
+            item.createdButtons[0].classList.remove('button-disabled');
+            item.createdButtons[1].classList.remove('button-disabled');
+            item.createdButtons[2].classList.remove('button-disabled');
+          });
+
           const serverQuery = new ServerQuery();
           // console.log(this.carAnimation);
           this.carElements.forEach(async (carElements) => {
@@ -413,6 +528,14 @@ export default class GarageView extends View {
     };
     const createGarageCar = new ElementCreator(paramsGarageCar);
     this.elementCreator.addInnerElement(createGarageCar);
+
+    const paramsModal = {
+      tag: 'div',
+      className: [cssClasses.MODAL],
+    };
+    const creatorMoodal = new ElementCreator(paramsModal);
+    createGarageCar.addInnerElement(creatorMoodal);
+    this.creatorModal = creatorMoodal;
 
     const paramsTitle = {
       tag: 'h2',

@@ -24,7 +24,7 @@ const PAGE = 'page';
 const PREV = 'prev';
 const NEXT = 'next';
 
-const ITEM_PER_PAGE = 7;
+const ITEM_PER_PAGE = 10;
 
 const tableHeader = ['Number', 'Car', 'Name', 'Wins', 'Best time (seconds)'];
 
@@ -97,6 +97,7 @@ export default class WinnersView extends View {
     scoreTable.addInnerElement(scoreList);
 
     winners.data.forEach(async (winner, index) => {
+      console.log('winners', winner);
       const car: ICar = await serverQuery.getCar(Number(winner.id));
 
       const paramsScoreItem = {
