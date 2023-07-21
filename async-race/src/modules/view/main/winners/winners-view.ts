@@ -31,6 +31,10 @@ const tableHeader = ['Number', 'Car', 'Name', 'Wins', 'Best time (seconds)'];
 export default class WinnersView extends View {
   private currentPage: number;
 
+  private sort: string;
+
+  private order: string;
+
   constructor() {
     const params = {
       tag: 'div',
@@ -38,6 +42,8 @@ export default class WinnersView extends View {
     };
     super(params);
     this.currentPage = 1;
+    this.sort = '';
+    this.order = '';
     this.configureView();
   }
 
@@ -47,6 +53,8 @@ export default class WinnersView extends View {
     const winners: IWinnerResponse = await serverQuery.getWinners([
       { key: '_page', value: this.currentPage },
       { key: '_limit', value: ITEM_PER_PAGE },
+      { key: '_sort', value: this.sort },
+      { key: '_order', value: this.order },
     ]);
 
     const paramsTitle = {
@@ -85,8 +93,31 @@ export default class WinnersView extends View {
         className: [cssClasses.SCORE_TABLE_NAME],
         textContent: head,
       };
+      console.log(head);
       const scroreTableName = new ElementCreator(paramsScoreTableName);
       scoreTableHeader.addInnerElement(scroreTableName);
+      if (head === 'Wins') {
+        scroreTableName.setCallback(() => {
+          this.sort = 'wins';
+          if (this.order === 'ASC') {
+            this.order = 'DESC';
+          } else {
+            this.order = 'ASC';
+          }
+          this.setContent();
+        });
+      }
+      if (head === 'Best time (seconds)') {
+        scroreTableName.setCallback(() => {
+          this.sort = 'time';
+          if (this.order === 'ASC') {
+            this.order = 'DESC';
+          } else {
+            this.order = 'ASC';
+          }
+          this.setContent();
+        });
+      }
     });
 
     const paramsScoreList = {

@@ -61,7 +61,7 @@ export default class ElementCreator {
     }
   }
 
-  private setCallback(callback: CallableFunction): void {
+  public setCallback(callback: CallableFunction): void {
     if (typeof callback === 'function') {
       this.element?.addEventListener('click', (event) => callback(event));
     }
