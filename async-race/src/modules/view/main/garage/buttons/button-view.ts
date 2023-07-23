@@ -1,9 +1,9 @@
 import { IButton } from '../../../../types/types';
 import View from '../../../view';
 
-const cssClasses = {
-  BUTTON: 'button',
-};
+// const cssClasses = {
+//   BUTTON: 'button',
+// };
 
 export default class ButtonView extends View {
   constructor(buttonParams: IButton) {

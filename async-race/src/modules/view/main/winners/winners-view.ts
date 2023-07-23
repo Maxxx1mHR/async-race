@@ -93,7 +93,6 @@ export default class WinnersView extends View {
         className: [cssClasses.SCORE_TABLE_NAME],
         textContent: head,
       };
-      console.log(head);
       const scroreTableName = new ElementCreator(paramsScoreTableName);
       scoreTableHeader.addInnerElement(scroreTableName);
       if (head === 'Wins') {
@@ -128,7 +127,6 @@ export default class WinnersView extends View {
     scoreTable.addInnerElement(scoreList);
 
     winners.data.forEach(async (winner, index) => {
-      console.log('winners', winner);
       const car: ICar = await serverQuery.getCar(Number(winner.id));
 
       const paramsScoreItem = {

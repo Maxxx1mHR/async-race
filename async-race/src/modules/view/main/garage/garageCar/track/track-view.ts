@@ -20,14 +20,29 @@ const cssClasses = {
   BUTTON_DISABLED: 'button-disabled',
 };
 
-export default class TrackView extends View {
-  public car: ICar;
+let requestId: number | null = null;
+function startAmination(duration: number, callback: (arg0: number) => void): void {
+  let startAminations: number | null = null;
+  requestId = requestAnimationFrame(function measure(times) {
+    if (!startAminations) {
+      startAminations = times;
+    }
+    if (startAminations) {
+      const progress = (times - startAminations) / duration;
+      callback(progress);
+      if (progress < 1) {
+        requestId = requestAnimationFrame(measure);
+      }
+    }
+  });
+}
 
-  private buttons: IButton[];
+export default class TrackView extends View {
+  public carsOnPage: ICar;
+
+  private buttonsSelectAndRemove: IButton[];
 
   public createdCar: HTMLElement[];
-
-  public createdFinish: HTMLElement[];
 
   public createdButtons: HTMLElement[];
 
@@ -38,16 +53,16 @@ export default class TrackView extends View {
     };
     super(params);
 
-    this.buttons = buttons;
-    this.car = car;
+    this.buttonsSelectAndRemove = buttons;
+    this.carsOnPage = car;
     this.createdCar = [];
-    this.createdFinish = [];
     this.createdButtons = [];
-
     this.configureView();
   }
 
   private configureView(): void {
+    console.log(this.buttonsSelectAndRemove);
+    console.log(this.createdButtons);
     const paramsTrackWrapper = {
       tag: 'div',
       className: [cssClasses.TRACK_WRAPPER],
@@ -61,9 +76,7 @@ export default class TrackView extends View {
       src: (img.src = img_finish),
       alt: 'finish',
     };
-
     const finish = new ElementCreator(paramsFinish);
-
     this.elementCreator.addInnerElement(finish);
 
     const paramsTrackSettingButtons = {
@@ -73,7 +86,7 @@ export default class TrackView extends View {
     const trackSettingButtons = new ElementCreator(paramsTrackSettingButtons);
     trackWrapper.addInnerElement(trackSettingButtons);
 
-    this.buttons.forEach((button) => {
+    this.buttonsSelectAndRemove.forEach((button) => {
       const buttonElement = new ButtonView(button);
       const htmlButtonElement = buttonElement.getHTMLElement();
       if (htmlButtonElement) {
@@ -85,31 +98,10 @@ export default class TrackView extends View {
       }
     });
 
-    let requestId: number | null = null;
-    function startAmination(duration: number, callback: (arg0: number) => void): void {
-      let startAminations: number | null = null;
-
-      requestId = requestAnimationFrame(function measure(times) {
-        if (!startAminations) {
-          startAminations = times;
-        }
-
-        if (startAminations) {
-          const progress = (times - startAminations) / duration;
-
-          callback(progress);
-
-          if (progress < 1) {
-            requestId = requestAnimationFrame(measure);
-          }
-        }
-      });
-    }
-
     const paramsStartButton = {
       tag: 'div',
       className: [cssClasses.BUTTON, cssClasses.BUTTON_SMALL],
-      textContent: 'Start',
+      textContent: 'start',
       callback: async (): Promise<void> => {
         this.createdButtons[0].classList.add('button-disabled');
         this.createdButtons[1].classList.add('button-disabled');
@@ -120,7 +112,7 @@ export default class TrackView extends View {
 
         const finishFlag = document.querySelector('.track__finish');
 
-        const time = await serverQuery.getEngineStatus(this.car.id, 'started');
+        const time = await serverQuery.getEngineStatus(this.carsOnPage.id, 'started');
 
         if (finishFlag instanceof HTMLElement) {
           const duration = time[1];
@@ -132,7 +124,7 @@ export default class TrackView extends View {
             car.style.transform = `translateX(${translate}px)`;
           });
         }
-        await serverQuery.getDrive(this.car.id).catch(() => {
+        await serverQuery.getDrive(this.carsOnPage.id).catch(() => {
           if (requestId) {
             cancelAnimationFrame(requestId);
           }
@@ -150,7 +142,7 @@ export default class TrackView extends View {
     const paramsStopButton = {
       tag: 'div',
       className: [cssClasses.BUTTON, cssClasses.BUTTON_SMALL, cssClasses.BUTTON_DISABLED],
-      textContent: 'Stop',
+      textContent: 'stop',
       callback: async (): Promise<void> => {
         this.createdButtons[0].classList.remove('button-disabled');
         this.createdButtons[1].classList.remove('button-disabled');
@@ -158,7 +150,7 @@ export default class TrackView extends View {
         this.createdButtons[3].classList.add('button-disabled');
 
         const serverQuery = new ServerQuery();
-        await serverQuery.getEngineStatus(this.car.id, 'stopped');
+        await serverQuery.getEngineStatus(this.carsOnPage.id, 'stopped');
         if (requestId) {
           cancelAnimationFrame(requestId);
           const car = this.createdCar[0];
@@ -185,7 +177,7 @@ export default class TrackView extends View {
     const paramsName = {
       tag: 'div',
       className: [cssClasses.NAME],
-      textContent: this.car.name,
+      textContent: this.carsOnPage.name,
     };
     const name = new ElementCreator(paramsName);
     carWrapper.addInnerElement(name);
@@ -193,7 +185,7 @@ export default class TrackView extends View {
     const paramsCar = {
       tag: 'div',
       className: [cssClasses.CAR],
-      backgroundColor: this.car.color,
+      backgroundColor: this.carsOnPage.color,
     };
 
     const car = new ElementCreator(paramsCar);
@@ -211,25 +203,4 @@ export default class TrackView extends View {
       currentElement.firstElementChild.remove();
     }
   }
-
-  // private async startCar(duration: number): Promise<void> {
-  //   const finish = document.querySelector('.track__finish');
-
-  //   const car = this.createdCar[0];
-  //   const framesCount = (duration / 1000) * 60;
-
-  //   if (finish instanceof HTMLElement && car instanceof HTMLElement) {
-  //     let current = 0;
-
-  //     const dx = (finish.offsetLeft - car.offsetLeft) / framesCount;
-  //     const tick = (): void => {
-  //       current += dx;
-  //       car.style.transform = `translateX(${current}px)`;
-  //       if (current < finish.offsetLeft - 40) {
-  //         requestAnimationFrame(tick);
-  //       }
-  //     };
-  //     tick();
-  //   }
-  // }
 }

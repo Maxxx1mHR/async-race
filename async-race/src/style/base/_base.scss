@@ -29,15 +29,21 @@ body {
 
 @keyframes pulse {
   0% {
-    color: red;
+    color: rgb(120, 44, 44);
     scale: 1;
   }
+  25% {
+    color: rgb(12, 66, 12);
+  }
   50% {
-    color: rgb(192, 143, 45);
+    color: rgb(171, 129, 46);
     scale: 1.2;
   }
+  75% {
+    color: rgb(109, 60, 68);
+  }
   100% {
-    color: blue;
+    color: rgb(47, 47, 106);
     scale: 1;
   }
 }

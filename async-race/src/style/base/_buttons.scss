@@ -35,13 +35,15 @@
 
 .button-small {
   width: 50px;
-  @include font($size: 1.4rem, $weight: 300);
+  @include font($size: 1.4rem, $weight: 500);
   &:hover::before {
     width: 0;
   }
 }
 
 .button-disabled {
-  background-color: #878787;
+  font-weight: 300;
+  color: $color-disabled;
+  // background-color: #878787;
   pointer-events: none;
 }

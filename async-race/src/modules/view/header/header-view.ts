@@ -1,8 +1,6 @@
 // import ElementCreator from '../utils/element-creator';
 import ElementCreator from '../../utils/element-creator';
-import GarageView from '../main/garage/garage-view';
 import MainView from '../main/main-view';
-import WinnersView from '../main/winners/winners-view';
 import View from '../view';
 import LinkNavigationView from './links/link-navigation-view';
 
@@ -57,8 +55,6 @@ export default class HeaderView extends View {
   }
 
   private getPages(mainComponent: MainView): { name: string; callback: () => void }[] {
-    // const winnersView = new WinnersView();
-    // const garageView = new GarageView(winnersView);
     const pages = [
       {
         name: NamePages.GARAGE,

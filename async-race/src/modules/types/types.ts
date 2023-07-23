@@ -16,7 +16,6 @@ export interface IPage {
 }
 
 export interface IInput {
-  // className: string[];
   type: string;
   value?: string;
 }
@@ -36,7 +35,6 @@ export interface ICar {
 export interface ICarRequest {
   name: string;
   color: string;
-  // id: number;
 }
 
 export interface ICarResponse {
@@ -64,7 +62,3 @@ export interface IQueryParams {
   key?: string;
   value?: number | string;
 }
-
-// export interface ICarResponse {
-//   garage: ICar[];
-// }
