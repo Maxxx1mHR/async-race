@@ -1,12 +1,44 @@
 .button {
-  display: inline-flex;
+  // display: inline-flex;
+  // justify-content: center;
+  // align-items: center;
+  // min-width: 50px;
+  // height: 20px;
+  // border: 2px solid red;
+  // color: #ffffff;
+  // cursor: pointer;
+
+  position: relative;
+  display: flex;
   justify-content: center;
   align-items: center;
-  min-width: 50px;
-  height: 20px;
-  border: 2px solid red;
-  color: #ffffff;
   cursor: pointer;
+  transition: scale 0.6s;
+  @include font($size: 1.6rem, $weight: 500);
+  &:hover {
+    border-bottom: 0;
+    scale: 1.1;
+  }
+  &::before {
+    position: absolute;
+    content: '';
+    top: 18px;
+    width: 0;
+    height: 2px;
+    background-color: $color-border-light;
+    transition: width 0.6s;
+  }
+  &:hover::before {
+    width: 100%;
+  }
+}
+
+.button-small {
+  width: 50px;
+  @include font($size: 1.4rem, $weight: 300);
+  &:hover::before {
+    width: 0;
+  }
 }
 
 .button-disabled {

@@ -1,0 +1,45 @@
+.settings {
+  margin: 15px auto;
+  width: 480px;
+  display: flex;
+  flex-direction: column;
+}
+
+.settings__create,
+.settings__update,
+.settings__generate {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  letter-spacing: 2px;
+}
+.settings__generate {
+  justify-content: space-between;
+}
+
+.input[type='text'] {
+  width: 300px;
+  height: 30px;
+  padding: 10px;
+  border-radius: 10px;
+  margin-right: 5px;
+  @include font($size: 1.6rem);
+  border: none;
+  &:focus {
+    outline: none;
+    border: 3px solid $color-border-dark;
+  }
+}
+
+.input[type='color'] {
+  margin-right: 15px;
+  border-radius: 10px;
+  width: 50px;
+  outline: none;
+  border: none;
+  border: none;
+  &:focus {
+    outline: none;
+    border: 1px solid $color-border-dark;
+  }
+}

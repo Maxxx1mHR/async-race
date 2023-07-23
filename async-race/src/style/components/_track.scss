@@ -1,4 +1,5 @@
 .track {
+  padding: 0 10px;
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
@@ -11,6 +12,7 @@
   align-items: center;
   max-width: 100px;
   flex-wrap: wrap;
+  margin-right: 20px;
   // > * {
   //   margin-right: 10px;
   // }
@@ -31,14 +33,25 @@
   // border-bottom: dashed white 5px;
 }
 .track__car-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  -webkit-filter: drop-shadow(2px 2px 4px rgba(25, 25, 40, 0.9));
+  // display: flex;
+  // flex-direction: column;
+  // align-items: center;
+}
+.track__car-name {
+  @include font($size: 1.6rem);
+  @include media-tablet {
+    font-size: 1.2rem;
+  }
 }
 
 .track__finish {
   width: 55px;
   margin-right: 150px;
+  @include media-tablet {
+    width: 45px;
+    margin-right: 80px;
+  }
 }
 
 .track__car {
@@ -48,7 +61,13 @@
   // background-color: red;
   -webkit-mask: url('../../assets/img/car.svg') no-repeat center;
   mask: url(../../assets/img/car.svg) no-repeat center;
-  // background-size: 120px 40px;
+  @include media-tablet {
+    width: 70px;
+    height: 35px;
+    // background-color: red;
+    -webkit-mask: url('../../assets/img/car-medium.svg') no-repeat center;
+    mask: url(../../assets/img/car-medium.svg) no-repeat center;
+  }
 }
 
 .car-small {

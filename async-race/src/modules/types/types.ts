@@ -22,6 +22,7 @@ export interface IInput {
 }
 
 export interface IButton {
+  className: string[];
   name: string;
   callback: CallableFunction;
 }

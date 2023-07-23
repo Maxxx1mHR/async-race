@@ -18,6 +18,7 @@ const cssClasses = {
   SUBTITLE: 'subtitle',
   NAV: 'navigation-page',
   BUTTON: 'button',
+  BUTTON_SMALL: 'button-small',
   MODAL: 'modal',
 };
 
@@ -172,7 +173,7 @@ export default class GarageView extends View {
 
     const parammsSettingGenerate = {
       tag: 'div',
-      className: [cssClasses.SETTING_CREATE],
+      className: [cssClasses.SETTING_GENERATE],
     };
     const createSettingGenerate = new ElementCreator(parammsSettingGenerate);
     createSetting.addInnerElement(createSettingGenerate);
@@ -187,7 +188,7 @@ export default class GarageView extends View {
       }
 
       if (htmlButtonElement instanceof HTMLElement) {
-        createSetting.addInnerElement(htmlButtonElement);
+        createSettingGenerate.addInnerElement(htmlButtonElement);
       }
     });
   }
@@ -210,6 +211,8 @@ export default class GarageView extends View {
 
     const buttons = [
       {
+        className: [cssClasses.BUTTON],
+
         name: inputButtons.CREATE,
         callback: async (): Promise<void> => {
           console.log(this.settingButtonElements);
@@ -223,6 +226,8 @@ export default class GarageView extends View {
         },
       },
       {
+        className: [cssClasses.BUTTON],
+
         name: inputButtons.UPDATE,
         callback: async (): Promise<void> => {
           const textValueFromInputUpdate = this.inputElements[2].getHTMLElement() as HTMLInputElement;
@@ -242,6 +247,8 @@ export default class GarageView extends View {
   private getSettingButtons(): IButton[] {
     const buttons = [
       {
+        className: [cssClasses.BUTTON],
+
         name: settingButtons.RACE,
 
         callback: (): void => {
@@ -386,7 +393,7 @@ export default class GarageView extends View {
 
               if (finishFlag instanceof HTMLElement) {
                 const duration = item[1];
-                const distance = finishFlag.offsetLeft - 40;
+                const distance = finishFlag.offsetLeft - 80;
                 const car = this.carElements[index].createdCar[0];
 
                 startAmination(duration, (progress) => {
@@ -454,6 +461,8 @@ export default class GarageView extends View {
         },
       },
       {
+        className: [cssClasses.BUTTON],
+
         name: settingButtons.RESET,
         callback: (): void => {
           this.creatorModal?.setTextContent('');
@@ -485,6 +494,7 @@ export default class GarageView extends View {
         },
       },
       {
+        className: [cssClasses.BUTTON],
         name: settingButtons.GENERAGE,
         callback: (): void => {
           // console.log('generate');
@@ -618,11 +628,12 @@ export default class GarageView extends View {
     creatorNav.addInnerElement(buttonNext);
   }
 
-  private getCarButtons(car: ICar): { name: string; callback: () => void }[] {
+  private getCarButtons(car: ICar): IButton[] {
     const serverQuery = new ServerQuery();
 
     const buttons = [
       {
+        className: [cssClasses.BUTTON, cssClasses.BUTTON_SMALL],
         name: carButtons.SELECT,
         callback: (): void => {
           // console.log(this.selectedCarValue);
@@ -635,6 +646,7 @@ export default class GarageView extends View {
         },
       },
       {
+        className: [cssClasses.BUTTON, cssClasses.BUTTON_SMALL],
         name: carButtons.REMOVE,
         callback: async (): Promise<void> => {
           await serverQuery.deleteCar(car.id);

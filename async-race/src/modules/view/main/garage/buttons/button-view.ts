@@ -9,7 +9,8 @@ export default class ButtonView extends View {
   constructor(buttonParams: IButton) {
     const params = {
       tag: 'div',
-      className: [cssClasses.BUTTON],
+      // className: [cssClasses.BUTTON],
+      className: buttonParams.className,
       textContent: buttonParams.name,
       callback: buttonParams.callback,
     };

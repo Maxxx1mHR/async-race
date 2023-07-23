@@ -16,6 +16,8 @@ const cssClasses = {
   CAR: 'track__car',
   FINISH: 'track__finish',
   BUTTON: 'button',
+  BUTTON_SMALL: 'button-small',
+  BUTTON_DISABLED: 'button-disabled',
 };
 
 export default class TrackView extends View {
@@ -106,7 +108,7 @@ export default class TrackView extends View {
 
     const paramsStartButton = {
       tag: 'div',
-      className: ['button'],
+      className: [cssClasses.BUTTON, cssClasses.BUTTON_SMALL],
       textContent: 'Start',
       callback: async (): Promise<void> => {
         this.createdButtons[0].classList.add('button-disabled');
@@ -123,7 +125,7 @@ export default class TrackView extends View {
         if (finishFlag instanceof HTMLElement) {
           const duration = time[1];
 
-          const distance = finishFlag.offsetLeft - 40;
+          const distance = finishFlag.offsetLeft - 80;
           const car = this.createdCar[0];
           startAmination(duration, (progress) => {
             const translate = progress * distance;
@@ -147,7 +149,7 @@ export default class TrackView extends View {
 
     const paramsStopButton = {
       tag: 'div',
-      className: ['button', 'button-disabled'],
+      className: [cssClasses.BUTTON, cssClasses.BUTTON_SMALL, cssClasses.BUTTON_DISABLED],
       textContent: 'Stop',
       callback: async (): Promise<void> => {
         this.createdButtons[0].classList.remove('button-disabled');

@@ -1,10 +1,14 @@
 .score__table {
   // width: 400px;
-
+  margin: 30px 40px 0 40px;
   border-radius: 9px;
-
-  background-color: rgb(54, 76, 86);
-  border: 2px solid #fff;
+  background-color: $color-background-table;
+  border: 2px solid $color-border-light;
+  @include font($size: 1.6rem, $color: $color-light-text);
+  @include media-tablet {
+    font-size: 1.2rem;
+    margin: 20px 10px 10px;
+  }
 }
 
 .score__header-table {
@@ -12,21 +16,28 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 3px solid rgb(22, 43, 53);
+  border-bottom: 3px solid $color-border-dark;
   margin-bottom: 10px;
 }
 .score__header-name {
   width: 80px;
+
+  &:nth-child(3) {
+    width: 150px;
+  }
 }
 
 .score__item {
   padding: 0 10px;
   display: flex;
   justify-content: space-between;
-  border-bottom: 1px solid #fff;
+  border-bottom: 1px solid $color-border-light;
   margin-bottom: 5px;
 }
 
 .score__item-car {
-  width: 80px;
+  width: 70px;
+  &:nth-child(3) {
+    width: 150px;
+  }
 }
