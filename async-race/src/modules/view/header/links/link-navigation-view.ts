@@ -23,7 +23,6 @@ export default class LinkNavigationView extends View {
   }
 
   public setSelectedStatus(): void {
-    // console.log(this.linkButtons);
     this.linkButtons.forEach((linkButton) => linkButton.setNotSelectedStatus());
     const element = this.elementCreator.getElement();
     element?.classList.add(cssClasses.ITEM_SELECTED);

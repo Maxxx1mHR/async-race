@@ -4,9 +4,6 @@ html {
 html,
 body {
   background-color: $color-background;
-  // background-color: $color-background;
-  // overflow: hidden;
-  // height: 100%;
   @extend %font-prim;
 }
 
@@ -24,7 +21,7 @@ body {
   left: 50%;
   transform: translateX(-50%);
   @include font($size: 2.6rem, $weight: 700);
-  animation: pulse 2s infinite;
+  animation: pulse 1s infinite;
 }
 
 @keyframes pulse {
@@ -47,40 +44,3 @@ body {
     scale: 1;
   }
 }
-
-// body {
-//   display: flex;
-//   justify-content: space-between;
-//   cursor: url('../../assets/icons/pirot/cursor/hook.svg'), auto;
-// }
-
-// .container {
-//   padding: 20px 40px 0 40px;
-//   @include media-laptop-large {
-//     padding: 0 10px;
-//   }
-// }
-
-// .wrap {
-//   display: flex;
-//   flex-direction: column;
-//   width: 100%;
-//   height: 100%;
-//   overflow-y: scroll;
-//   max-height: 100vh;
-// }
-
-// .wrap::-webkit-scrollbar {
-//   width: 12px;
-// }
-// .wrap::-webkit-scrollbar-thumb {
-//   background-color: $color-primary-light;
-//   border-radius: 20px;
-//   border: 3px solid $color-border-dark;
-// }
-// .main {
-//   flex: 1 0 auto;
-// }
-// .footer {
-//   flex: 0 0 auto;
-// }

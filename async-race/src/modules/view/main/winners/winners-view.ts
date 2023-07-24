@@ -62,17 +62,6 @@ export default class WinnersView extends View {
       { key: '_order', value: this.order },
     ]);
 
-    // if (this.currentPage !== 1 && winners.count % 10 === 0) {
-    //   console.log('сработало');
-    //   this.currentPage -= 1;
-    //   // this.setContent();
-    //   const currentElement = this.elementCreator.getElement();
-    //   console.log(currentElement);
-    //   if (currentElement) {
-    //     currentElement.innerHTML = '';
-    //   }
-    //   // currentElement?.remove();
-    // }
     const countPage = Math.ceil(winners.count / ITEM_PER_PAGE) || 1;
 
     this.countWinners = winners.count;
@@ -259,7 +248,6 @@ export default class WinnersView extends View {
     };
     const buttonNext = new ElementCreator(paramsButtonNext);
     creatorNav.addInnerElement(buttonNext);
-
     if (countPage === 1) {
       buttonPrev.setCssClasses([cssClasses.BUTTON_DISABLED]);
       buttonNext.setCssClasses([cssClasses.BUTTON_DISABLED]);
@@ -274,7 +262,6 @@ export default class WinnersView extends View {
 
   public setContent(): void {
     const currentElement = this.elementCreator.getElement();
-
     while (currentElement?.firstElementChild) {
       currentElement.firstElementChild.remove();
     }

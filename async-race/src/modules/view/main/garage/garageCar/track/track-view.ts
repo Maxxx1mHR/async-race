@@ -64,9 +64,6 @@ export default class TrackView extends View {
   }
 
   private configureView(): void {
-    // console.log(this.buttonsSelectAndRemove);
-    // console.log(this.createdButtons);
-    console.log(this.settingButtonElements);
     const paramsTrackWrapper = {
       tag: 'div',
       className: [cssClasses.TRACK_WRAPPER],
@@ -111,18 +108,14 @@ export default class TrackView extends View {
         this.createdButtons[1].classList.add('button-disabled');
         this.createdButtons[2].classList.add('button-disabled');
         this.createdButtons[3].classList.remove('button-disabled');
-
         this.settingButtonElements[3].classList.remove('button-disabled');
 
         const serverQuery = new ServerQuery();
-
         const finishFlag = document.querySelector('.track__finish');
-
         const time = await serverQuery.getEngineStatus(this.carsOnPage.id, 'started');
 
         if (finishFlag instanceof HTMLElement) {
           const duration = time[1];
-
           const distance = finishFlag.offsetLeft - 80;
           const car = this.createdCar[0];
           startAmination(duration, (progress) => {

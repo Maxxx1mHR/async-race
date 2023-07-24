@@ -73,10 +73,10 @@ export default class ServerQuery {
       method: 'PATCH',
     });
     if (response.status === 500) {
-      console.log('Я дальше не поеду', response.status);
+      console.log('Машина сломалась!', response.status);
     }
     if (response.status === 429) {
-      console.log('Не тыкай так часто', response.status);
+      console.log('Слишком много запросов!', response.status);
     }
     const data = await response.json();
     return data;

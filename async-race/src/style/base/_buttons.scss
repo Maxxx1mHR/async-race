@@ -1,13 +1,4 @@
 .button {
-  // display: inline-flex;
-  // justify-content: center;
-  // align-items: center;
-  // min-width: 50px;
-  // height: 20px;
-  // border: 2px solid red;
-  // color: #ffffff;
-  // cursor: pointer;
-
   position: relative;
   display: flex;
   justify-content: center;
@@ -32,7 +23,6 @@
     width: 100%;
   }
 }
-
 .button-small {
   width: 50px;
   @include font($size: 1.4rem, $weight: 500);
@@ -40,10 +30,8 @@
     width: 0;
   }
 }
-
 .button-disabled {
   font-weight: 300;
   color: $color-disabled;
-  // background-color: #878787;
   pointer-events: none;
 }

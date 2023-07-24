@@ -1,4 +1,3 @@
-// import ElementCreator from '../utils/element-creator';
 import ElementCreator from '../../utils/element-creator';
 import MainView from '../main/main-view';
 import View from '../view';
