@@ -17,6 +17,7 @@ const cssClasses = {
   CAR_SMALL: 'car-small',
   NAV: 'navigation-page',
   BUTTON: 'button',
+  BUTTON_DISABLED: 'button-disabled',
 };
 
 const TITLE_TEXT = 'Winners';
@@ -29,7 +30,9 @@ const ITEM_PER_PAGE = 10;
 const tableHeader = ['Number', 'Car', 'Name', 'Wins', 'Best time (seconds)'];
 
 export default class WinnersView extends View {
-  private currentPage: number;
+  public currentPage: number;
+
+  public countWinners: number;
 
   private sort: string;
 
@@ -42,6 +45,7 @@ export default class WinnersView extends View {
     };
     super(params);
     this.currentPage = 1;
+    this.countWinners = 0;
     this.sort = '';
     this.order = '';
     this.configureView();
@@ -57,6 +61,21 @@ export default class WinnersView extends View {
       { key: '_order', value: this.order },
     ]);
 
+    // if (this.currentPage !== 1 && winners.count % 10 === 0) {
+    //   console.log('сработало');
+    //   this.currentPage -= 1;
+    //   // this.setContent();
+    //   const currentElement = this.elementCreator.getElement();
+    //   console.log(currentElement);
+    //   if (currentElement) {
+    //     currentElement.innerHTML = '';
+    //   }
+    //   // currentElement?.remove();
+    // }
+    const countPage = Math.ceil(winners.count / ITEM_PER_PAGE) || 1;
+
+    this.countWinners = winners.count;
+
     const paramsTitle = {
       tag: 'h2',
       className: [cssClasses.TITILE],
@@ -68,7 +87,7 @@ export default class WinnersView extends View {
     const paramsPage = {
       tag: 'h3',
       className: [cssClasses.SUBTITLE],
-      textContent: `${PAGE} ${this.currentPage} / ${Math.ceil(winners.count / ITEM_PER_PAGE)}`,
+      textContent: `${PAGE} ${this.currentPage} / ${countPage}`,
     };
     const creatorSubtitle = new ElementCreator(paramsPage);
     this.elementCreator.addInnerElement(creatorSubtitle);
@@ -135,7 +154,6 @@ export default class WinnersView extends View {
       };
 
       const scoreItem = new ElementCreator(paramsScoreItem);
-      scoreList.addInnerElement(scoreItem);
 
       const paramsScoreItemNumber = {
         tag: 'span',
@@ -172,6 +190,7 @@ export default class WinnersView extends View {
       };
       const scoreItemTime = new ElementCreator(paramsScoreItemTime);
 
+      scoreList.addInnerElement(scoreItem);
       scoreItem.addInnerElement(scoreItemNumber);
       scoreItem.addInnerElement(scoreItemCar);
       scoreItem.addInnerElement(scoreItemName);
@@ -217,6 +236,17 @@ export default class WinnersView extends View {
     };
     const buttonNext = new ElementCreator(paramsButtonNext);
     creatorNav.addInnerElement(buttonNext);
+
+    if (countPage === 1) {
+      buttonPrev.setCssClasses([cssClasses.BUTTON_DISABLED]);
+      buttonNext.setCssClasses([cssClasses.BUTTON_DISABLED]);
+    }
+    if (this.currentPage === 1) {
+      buttonPrev.setCssClasses([cssClasses.BUTTON_DISABLED]);
+    }
+    if (this.currentPage === countPage) {
+      buttonNext.setCssClasses([cssClasses.BUTTON_DISABLED]);
+    }
   }
 
   public setContent(): void {

@@ -210,8 +210,8 @@ export default class GarageView extends View {
     const inputs = [
       {
         type: inputTypes.TYPE_TEXT,
-        maxlength: 30,
-        placeholder: 'Максимум 30 символов',
+        maxlength: 20,
+        placeholder: 'Максимум 20 символов',
       },
       {
         type: inputTypes.TYPE_COLOR,
@@ -252,6 +252,10 @@ export default class GarageView extends View {
             name: textValueFromInputUpdate.value,
             color: colorValueFromInputUpdate.value,
           });
+          textValueFromInputUpdate.value = '';
+          colorValueFromInputUpdate.value = '#ffffff';
+          textValueFromInputUpdate.disabled = true;
+          colorValueFromInputUpdate.disabled = true;
           this.updateContentGarage();
           this.winnersView.setContent();
         },
@@ -340,26 +344,35 @@ export default class GarageView extends View {
                     if (oneCall) {
                       oneCall = false;
                       if (winner.id !== item[0]) {
-                        await serverQuery.createWinner({
-                          id: item[0],
-                          wins: 1,
-                          time: Number((item[1] / 1000).toFixed(2)),
-                        });
-                        this.winnersView.setContent();
+                        await serverQuery
+                          .createWinner({
+                            id: item[0],
+                            wins: 1,
+                            time: Number((item[1] / 1000).toFixed(2)),
+                          })
+                          .then(() => {
+                            this.winnersView.setContent();
+                          });
                       } else if (winner.id === item[0] && winner.time <= Number((item[1] / 1000).toFixed(2))) {
-                        await serverQuery.updateWinner(item[0], {
-                          id: item[0],
-                          wins: Number(winner.wins) + 1,
-                          time: winner.time,
-                        });
-                        this.winnersView.setContent();
+                        await serverQuery
+                          .updateWinner(item[0], {
+                            id: item[0],
+                            wins: Number(winner.wins) + 1,
+                            time: winner.time,
+                          })
+                          .then(() => {
+                            this.winnersView.setContent();
+                          });
                       } else if (winner.id === item[0] && winner.time >= Number((item[1] / 1000).toFixed(2))) {
-                        await serverQuery.updateWinner(item[0], {
-                          id: item[0],
-                          wins: Number(winner.wins) + 1,
-                          time: Number((item[1] / 1000).toFixed(2)),
-                        });
-                        this.winnersView.setContent();
+                        await serverQuery
+                          .updateWinner(item[0], {
+                            id: item[0],
+                            wins: Number(winner.wins) + 1,
+                            time: Number((item[1] / 1000).toFixed(2)),
+                          })
+                          .then(() => {
+                            this.winnersView.setContent();
+                          });
                       }
                       this.creatorModal?.setTextContent(
                         `${this.carElements[index].carsOnPage.name} went first ${Number((item[1] / 1000).toFixed(2))}`,
@@ -420,6 +433,7 @@ export default class GarageView extends View {
         className: [cssClasses.BUTTON],
         name: settingButtons.GENERAGE,
         callback: (): void => {
+          this.settingButton[4].classList.add('button-disabled');
           this.generateCars();
           this.updateContentGarage();
         },
@@ -429,21 +443,28 @@ export default class GarageView extends View {
     return buttons;
   }
 
-  private generateCars(): void {
+  private async generateCars(): Promise<void> {
     const serverQuery = new ServerQuery();
     let i = 0;
+    const result = [];
     while (i < 100) {
       const mark = carMark[Math.floor(Math.random() * carMark.length)];
       const model = carModel[Math.floor(Math.random() * carModel.length)];
       const color = Math.floor(Math.random() * 16777215)
         .toString(16)
         .padStart(6, '0');
-      serverQuery.createCar({
+      result[i] = serverQuery.createCar({
         name: `${mark} ${model}`,
         color: `#${color}`,
       });
       i += 1;
     }
+    Promise.all(result).then(() => {
+      this.settingButton[4].classList.remove('button-disabled');
+    });
+    console.log(result);
+    // return result;
+    // this.settingButton[4].classList.remove('button-disabled');
   }
 
   private async configureGarageCarView(): Promise<void> {
@@ -570,7 +591,6 @@ export default class GarageView extends View {
 
     creatorNav.addInnerElement(buttonPrev);
     creatorNav.addInnerElement(buttonNext);
-    console.log(this.paginationGarageButton);
   }
 
   private getCarButtons(car: ICar): IButton[] {
@@ -581,7 +601,7 @@ export default class GarageView extends View {
         className: [cssClasses.BUTTON, cssClasses.BUTTON_SMALL],
         name: carButtons.SELECT,
         callback: (): void => {
-          console.log(this.settingButton);
+          // console.log(this.settingButton);
           const textValueFromInputUpdate = this.inputElements[2].getHTMLElement() as HTMLInputElement;
           const colorValueFromInputUpdate = this.inputElements[3].getHTMLElement() as HTMLInputElement;
           this.settingButton[1].classList.remove('button-disabled');
@@ -604,6 +624,13 @@ export default class GarageView extends View {
           ]);
           if (this.currentPage !== 1 && cars.count % 7 === 0) {
             this.currentPage -= 1;
+          }
+          console.log(this.winnersView.currentPage);
+          console.log(this.winnersView.countWinners);
+          if (this.winnersView.currentPage !== 1 && this.winnersView.countWinners % 10 === 1) {
+            console.log('55');
+            this.winnersView.currentPage -= 1;
+            // this.winnersView.setContent();
           }
           this.updateContentGarage();
           this.winnersView.setContent();
