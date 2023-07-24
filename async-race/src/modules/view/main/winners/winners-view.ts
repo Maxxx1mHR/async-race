@@ -18,6 +18,7 @@ const cssClasses = {
   NAV: 'navigation-page',
   BUTTON: 'button',
   BUTTON_DISABLED: 'button-disabled',
+  ARROW: 'arrow',
 };
 
 const TITLE_TEXT = 'Winners';
@@ -106,6 +107,13 @@ export default class WinnersView extends View {
     const scoreTableHeader = new ElementCreator(paramsScoreTableHeader);
     scoreTable.addInnerElement(scoreTableHeader);
 
+    const paramsScoreList = {
+      tag: 'ul',
+      className: [cssClasses.SCORE_LIST],
+    };
+    const scoreList = new ElementCreator(paramsScoreList);
+    scoreTable.addInnerElement(scoreList);
+
     tableHeader.forEach((head) => {
       const paramsScoreTableName = {
         tag: 'span',
@@ -115,35 +123,50 @@ export default class WinnersView extends View {
       const scroreTableName = new ElementCreator(paramsScoreTableName);
       scoreTableHeader.addInnerElement(scroreTableName);
       if (head === 'Wins') {
+        scroreTableName.setCssClasses([cssClasses.ARROW]);
+        if (this.order === 'DESC' && this.sort === 'wins') {
+          scroreTableName.setCssClasses([cssClasses.ARROW, 'arrow-desc']);
+        }
+        if (this.order === 'ASC' && this.sort === 'wins') {
+          scroreTableName.setCssClasses([cssClasses.ARROW, 'arrow-asc']);
+        }
         scroreTableName.setCallback(() => {
           this.sort = 'wins';
           if (this.order === 'ASC') {
+            scroreTableName.getElement()?.classList.remove('arrow-asc');
+            scroreTableName.getElement()?.classList.add('arrow-desc');
             this.order = 'DESC';
           } else {
+            scroreTableName.getElement()?.classList.remove('arrow-desc');
+            scroreTableName.getElement()?.classList.add('arrow-asc');
             this.order = 'ASC';
           }
           this.setContent();
         });
       }
       if (head === 'Best time (seconds)') {
+        scroreTableName.setCssClasses([cssClasses.ARROW]);
+        if (this.order === 'DESC' && this.sort === 'time') {
+          scroreTableName.setCssClasses([cssClasses.ARROW, 'arrow-desc']);
+        }
+        if (this.order === 'ASC' && this.sort === 'time') {
+          scroreTableName.setCssClasses([cssClasses.ARROW, 'arrow-asc']);
+        }
         scroreTableName.setCallback(() => {
           this.sort = 'time';
           if (this.order === 'ASC') {
+            scroreTableName.getElement()?.classList.remove('arrow-asc');
+            scroreTableName.getElement()?.classList.add('arrow-desc');
             this.order = 'DESC';
           } else {
+            scroreTableName.getElement()?.classList.remove('arrow-desc');
+            scroreTableName.getElement()?.classList.add('arrow-asc');
             this.order = 'ASC';
           }
           this.setContent();
         });
       }
     });
-
-    const paramsScoreList = {
-      tag: 'ul',
-      className: [cssClasses.SCORE_LIST],
-    };
-    const scoreList = new ElementCreator(paramsScoreList);
-    scoreTable.addInnerElement(scoreList);
 
     winners.data.forEach(async (winner, index) => {
       const car: ICar = await serverQuery.getCar(Number(winner.id));

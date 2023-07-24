@@ -67,7 +67,7 @@ const carMark = [
   'Infiniti',
   'Bugatti',
   'Lamborghini',
-  'Suzuli',
+  'Suzuki',
   'Mazda',
 ];
 const carModel = [
