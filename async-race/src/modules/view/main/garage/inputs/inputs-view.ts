@@ -12,6 +12,8 @@ export default class InputView extends View {
       className: [cssClasses.INPUT],
       type: inputParams.type,
       value: inputParams.value,
+      maxLength: inputParams.maxlength,
+      placeholder: inputParams.placeholder,
     };
     super(params);
   }

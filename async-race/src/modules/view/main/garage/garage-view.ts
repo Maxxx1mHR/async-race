@@ -99,7 +99,9 @@ export default class GarageView extends View {
 
   private winnersView: WinnersView;
 
-  private settingButtonElements: HTMLElement[];
+  private settingButton: HTMLElement[];
+
+  private paginationGarageButton: HTMLElement[];
 
   private creatorModal: ElementCreator | null;
 
@@ -113,7 +115,8 @@ export default class GarageView extends View {
     this.inputElements = [];
     this.selectedCarValue = 0;
     this.carElements = [];
-    this.settingButtonElements = [];
+    this.settingButton = [];
+    this.paginationGarageButton = [];
     this.currentPage = 1;
     this.winnersView = winnersView;
     this.creatorModal = null;
@@ -147,7 +150,7 @@ export default class GarageView extends View {
       const htmlButtonElement = buttonElement.getHTMLElement();
 
       if (htmlButtonElement) {
-        this.settingButtonElements.push(htmlButtonElement);
+        this.settingButton.push(htmlButtonElement);
       }
 
       if (htmlButtonElement instanceof HTMLElement) {
@@ -185,19 +188,20 @@ export default class GarageView extends View {
       }
     });
     if (htmlButtonCreate) {
-      this.settingButtonElements.push(htmlButtonCreate);
+      this.settingButton.push(htmlButtonCreate);
     }
     inputs.forEach((input) => {
       const inputElement = new InputView(input);
       const htmlInputElement = inputElement.getHTMLElement();
-      if (htmlInputElement && htmlButtonUpdate instanceof HTMLElement) {
+      if (htmlInputElement instanceof HTMLInputElement && htmlButtonUpdate instanceof HTMLElement) {
+        htmlInputElement.disabled = true;
         createSettingUpdate.addInnerElement(htmlInputElement);
         createSettingUpdate.addInnerElement(htmlButtonUpdate);
         this.inputElements.push(inputElement);
       }
     });
     if (htmlButtonUpdate) {
-      this.settingButtonElements.push(htmlButtonUpdate);
+      this.settingButton.push(htmlButtonUpdate);
     }
     return [createSettingCreate, createSettingUpdate];
   }
@@ -206,6 +210,8 @@ export default class GarageView extends View {
     const inputs = [
       {
         type: inputTypes.TYPE_TEXT,
+        maxlength: 30,
+        placeholder: 'Максимум 30 символов',
       },
       {
         type: inputTypes.TYPE_COLOR,
@@ -223,6 +229,8 @@ export default class GarageView extends View {
         className: [cssClasses.BUTTON],
         name: inputButtons.CREATE,
         callback: async (): Promise<void> => {
+          // this.settingButton = this.settingButton.slice(0, -2);
+
           const textValueFromInputCreate = this.inputElements[0].getHTMLElement() as HTMLInputElement;
           const colorValueFromInputCreate = this.inputElements[1].getHTMLElement() as HTMLInputElement;
           await serverQuery.createCar({
@@ -233,9 +241,11 @@ export default class GarageView extends View {
         },
       },
       {
-        className: [cssClasses.BUTTON],
+        className: [cssClasses.BUTTON, cssClasses.BUTTON_DISABLED],
         name: inputButtons.UPDATE,
         callback: async (): Promise<void> => {
+          this.settingButton[1].classList.add('button-disabled');
+          // this.settingButtonElements = this.settingButtonElements.slice(0, -2);
           const textValueFromInputUpdate = this.inputElements[2].getHTMLElement() as HTMLInputElement;
           const colorValueFromInputUpdate = this.inputElements[3].getHTMLElement() as HTMLInputElement;
           await serverQuery.updateCar(this.selectedCarValue, {
@@ -263,13 +273,17 @@ export default class GarageView extends View {
 
           const navButtons = document.querySelectorAll('.navigation__item');
           navButtons[1]?.classList.add('button-disabled');
-          this.settingButtonElements[0].classList.add('button-disabled');
-          this.settingButtonElements[1].classList.add('button-disabled');
-          this.settingButtonElements[2].classList.add('button-disabled');
-          this.settingButtonElements[3].classList.add('button-disabled');
-          this.settingButtonElements[4].classList.add('button-disabled');
-          this.settingButtonElements[5].classList.add('button-disabled');
-          this.settingButtonElements[6].classList.add('button-disabled');
+          this.settingButton[0].classList.add('button-disabled');
+          this.settingButton[1].classList.add('button-disabled');
+          this.settingButton[2].classList.add('button-disabled');
+          this.settingButton[3].classList.add('button-disabled');
+          this.settingButton[4].classList.add('button-disabled');
+
+          this.paginationGarageButton[0].classList.add('button-disabled');
+          this.paginationGarageButton[1].classList.add('button-disabled');
+
+          // this.settingButton[5].classList.add('button-disabled');
+          // this.settingButton[6].classList.add('button-disabled');
 
           const serverQuery = new ServerQuery();
           const finishFlag = document.querySelector('.track__finish');
@@ -361,7 +375,7 @@ export default class GarageView extends View {
                   }
                 });
               if (this.carElements.length === i) {
-                this.settingButtonElements[3].classList.remove('button-disabled');
+                this.settingButton[3].classList.remove('button-disabled');
               }
             }),
           );
@@ -372,14 +386,17 @@ export default class GarageView extends View {
         name: settingButtons.RESET,
         callback: (): void => {
           this.creatorModal?.setTextContent('');
-          this.settingButtonElements[3].classList.add('button-disabled');
+          this.settingButton[3].classList.add('button-disabled');
+          this.settingButton[1].classList.add('button-disabled');
+          this.settingButton[0].classList.remove('button-disabled');
+          this.settingButton[2].classList.remove('button-disabled');
+          this.settingButton[4].classList.remove('button-disabled');
 
-          this.settingButtonElements[0].classList.remove('button-disabled');
-          this.settingButtonElements[1].classList.remove('button-disabled');
-          this.settingButtonElements[2].classList.remove('button-disabled');
-          this.settingButtonElements[4].classList.remove('button-disabled');
-          this.settingButtonElements[5].classList.remove('button-disabled');
-          this.settingButtonElements[6].classList.remove('button-disabled');
+          this.paginationGarageButton[0].classList.remove('button-disabled');
+          this.paginationGarageButton[1].classList.remove('button-disabled');
+
+          // this.settingButton[5].classList.remove('button-disabled');
+          // this.settingButton[6].classList.remove('button-disabled');
 
           this.carElements.forEach((item) => {
             item.createdButtons[0].classList.remove('button-disabled');
@@ -395,7 +412,7 @@ export default class GarageView extends View {
             car.style.transform = `translateX(${0}px)`;
             // this.winnersView.setContent();
           });
-          this.settingButtonElements = this.settingButtonElements.slice(0, -2);
+          // this.settingButton = this.settingButton.slice(0, -2);
           this.updateContentGarage();
         },
       },
@@ -430,6 +447,7 @@ export default class GarageView extends View {
   }
 
   private async configureGarageCarView(): Promise<void> {
+    this.paginationGarageButton = [];
     const serverQuery = new ServerQuery();
 
     const cars: ICarResponse = await serverQuery.getCars([
@@ -472,7 +490,7 @@ export default class GarageView extends View {
     this.carElements = [];
 
     cars.data.forEach((car) => {
-      const track = new TrackView(car, this.getCarButtons(car));
+      const track = new TrackView(car, this.getCarButtons(car), this.settingButton);
 
       this.carElements.push(track);
 
@@ -497,14 +515,12 @@ export default class GarageView extends View {
       callback: (): void => {
         if (this.currentPage <= 1) {
           this.currentPage = 1;
-          // this.settingButtonElements[5].classList.add(cssClasses.BUTTON_DISABLED);
+
+          // this.settingButtonElements = this.settingButtonElements.slice(0, -2);
         } else {
           this.currentPage -= 1;
-          // this.settingButtonElements = [];
-          // console.log(this.settingButtonElements.slice(-2));
-          // console.log(this.settingButtonElements);
-          this.settingButtonElements = this.settingButtonElements.slice(0, -2);
-          // console.log(this.settingButtonElements);
+
+          // this.settingButtonElements = this.settingButtonElements.slice(0, -2);
 
           this.updateContentGarage();
         }
@@ -513,7 +529,9 @@ export default class GarageView extends View {
     const buttonPrev = new ElementCreator(paramsButtonPrev);
     const htmlbuttonPrev = buttonPrev.getElement();
     if (htmlbuttonPrev) {
-      this.settingButtonElements.push(htmlbuttonPrev);
+      this.paginationGarageButton.push(htmlbuttonPrev);
+
+      // this.settingButton.push(htmlbuttonPrev);
     }
 
     const paramsButtonNext = {
@@ -525,12 +543,7 @@ export default class GarageView extends View {
           this.currentPage = Math.ceil(cars.count / ITEM_PER_PAGE);
         } else {
           this.currentPage += 1;
-          // console.log(this.settingButtonElements);
-          this.settingButtonElements = this.settingButtonElements.slice(0, -2);
-
-          // console.log(this.settingButtonElements);
-
-          // this.settingButtonElements = [];
+          // this.settingButtonElements = this.settingButtonElements.slice(0, -2);
           this.updateContentGarage();
         }
       },
@@ -540,7 +553,8 @@ export default class GarageView extends View {
     const htmlbuttonNext = buttonNext.getElement();
 
     if (htmlbuttonNext) {
-      this.settingButtonElements.push(htmlbuttonNext);
+      this.paginationGarageButton.push(htmlbuttonNext);
+      // this.settingButton.push(htmlbuttonNext);
     }
 
     if (countPage === 1) {
@@ -556,6 +570,7 @@ export default class GarageView extends View {
 
     creatorNav.addInnerElement(buttonPrev);
     creatorNav.addInnerElement(buttonNext);
+    console.log(this.paginationGarageButton);
   }
 
   private getCarButtons(car: ICar): IButton[] {
@@ -566,9 +581,12 @@ export default class GarageView extends View {
         className: [cssClasses.BUTTON, cssClasses.BUTTON_SMALL],
         name: carButtons.SELECT,
         callback: (): void => {
-          console.log(this);
+          console.log(this.settingButton);
           const textValueFromInputUpdate = this.inputElements[2].getHTMLElement() as HTMLInputElement;
           const colorValueFromInputUpdate = this.inputElements[3].getHTMLElement() as HTMLInputElement;
+          this.settingButton[1].classList.remove('button-disabled');
+          textValueFromInputUpdate.disabled = false;
+          colorValueFromInputUpdate.disabled = false;
           textValueFromInputUpdate.value = car.name;
           colorValueFromInputUpdate.value = car.color;
           this.selectedCarValue = car.id;

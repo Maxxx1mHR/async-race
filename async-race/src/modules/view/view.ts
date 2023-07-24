@@ -23,6 +23,8 @@ export default abstract class View {
       backgroundColor: params.backgroundColor,
       type: params.type,
       value: params.value,
+      maxLength: params.maxLength,
+      placeholder: params.placeholder,
     };
     const elementCreator = new ElementCreator(elementParams);
     return elementCreator;

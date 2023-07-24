@@ -46,7 +46,9 @@ export default class TrackView extends View {
 
   public createdButtons: HTMLElement[];
 
-  constructor(car: ICar, buttons: IButton[]) {
+  private settingButtonElements: HTMLElement[];
+
+  constructor(car: ICar, buttons: IButton[], settingButtonsElemens: HTMLElement[]) {
     const params = {
       tag: 'div',
       className: [cssClasses.TRACK],
@@ -57,12 +59,14 @@ export default class TrackView extends View {
     this.carsOnPage = car;
     this.createdCar = [];
     this.createdButtons = [];
+    this.settingButtonElements = settingButtonsElemens;
     this.configureView();
   }
 
   private configureView(): void {
-    console.log(this.buttonsSelectAndRemove);
-    console.log(this.createdButtons);
+    // console.log(this.buttonsSelectAndRemove);
+    // console.log(this.createdButtons);
+    console.log(this.settingButtonElements);
     const paramsTrackWrapper = {
       tag: 'div',
       className: [cssClasses.TRACK_WRAPPER],
@@ -108,6 +112,8 @@ export default class TrackView extends View {
         this.createdButtons[2].classList.add('button-disabled');
         this.createdButtons[3].classList.remove('button-disabled');
 
+        this.settingButtonElements[3].classList.remove('button-disabled');
+
         const serverQuery = new ServerQuery();
 
         const finishFlag = document.querySelector('.track__finish');
@@ -148,6 +154,7 @@ export default class TrackView extends View {
         this.createdButtons[1].classList.remove('button-disabled');
         this.createdButtons[2].classList.remove('button-disabled');
         this.createdButtons[3].classList.add('button-disabled');
+        this.settingButtonElements[3].classList.add('button-disabled');
 
         const serverQuery = new ServerQuery();
         await serverQuery.getEngineStatus(this.carsOnPage.id, 'stopped');

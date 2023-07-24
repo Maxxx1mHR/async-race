@@ -30,6 +30,12 @@ export default class ElementCreator {
     if (param.value) {
       this.setValue(param.value);
     }
+    if (param.maxLength) {
+      this.setMaxLength(param.maxLength);
+    }
+    if (param.placeholder) {
+      this.setPlaceholder(param.placeholder);
+    }
   }
 
   public getElement(): HTMLElement | null {
@@ -94,6 +100,18 @@ export default class ElementCreator {
   private setValue(value: string): void {
     if (this.element instanceof HTMLInputElement) {
       this.element.value = value;
+    }
+  }
+
+  private setMaxLength(maxLength: number): void {
+    if (this.element instanceof HTMLInputElement) {
+      this.element.maxLength = maxLength;
+    }
+  }
+
+  private setPlaceholder(placeholder: string): void {
+    if (this.element instanceof HTMLInputElement) {
+      this.element.placeholder = placeholder;
     }
   }
 }

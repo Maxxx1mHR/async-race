@@ -8,7 +8,21 @@ export interface IElementParams {
   backgroundColor?: string;
   type?: string;
   value?: string;
+  maxLength?: number;
+  placeholder?: string;
 }
+
+// export interface IElementInputParams {
+//   tag: string;
+//   className: string[];
+//   textContent?: string;
+//   callback?: CallableFunction;
+//   src?: string;
+//   alt?: string;
+//   backgroundColor?: string;
+//   type?: string;
+//   value?: string;
+// }
 
 export interface IPage {
   name: string;
@@ -18,6 +32,8 @@ export interface IPage {
 export interface IInput {
   type: string;
   value?: string;
+  maxlength?: number;
+  placeholder?: string;
 }
 
 export interface IButton {
