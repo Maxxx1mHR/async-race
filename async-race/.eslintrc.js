@@ -25,6 +25,7 @@ module.exports = {
     ],
     "rules": {
       "class-methods-use-this": ["off", { "enforceForClassFields": false }],
+      "no-bitwise": ["error", { "allow": ["<<"] }],
 
         "prettier/prettier": "error",
         "@typescript-eslint/no-explicit-any": "error",

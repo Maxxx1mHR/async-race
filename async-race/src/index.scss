@@ -2,12 +2,12 @@
 @import 'style/abstract/constants';
 @import 'style/abstract/placeholder';
 @import 'style/abstract/mixin';
-@import 'style/abstract/animations.scss';
 
 @import 'style/base/base';
 @import 'style/base/fonts';
 @import 'style/base/buttons';
 
 @import 'style/components/navigation';
+@import 'style/components/settings';
 @import 'style/components/track';
-@import 'style/components/customize';
+@import 'style/components/score';

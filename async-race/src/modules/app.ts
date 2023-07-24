@@ -1,16 +1,18 @@
-/* eslint-disable no-new */
-import HeaderVIew from './header/header-view';
+import HeaderView from './view/header/header-view';
 import MainView from './view/main/main-view';
-
-// const pages = `
-//     <div class="header">
-//       <div class="button">Garage</div>
-//       <div class="button">Winners</div>
-//     </div>`;
 
 export default class App {
   constructor() {
-    new HeaderVIew();
-    new MainView();
+    this.createView();
+  }
+
+  private createView(): void {
+    const mainView = new MainView();
+    const headerView = new HeaderView(mainView);
+    const headerHtmleElement = headerView.getHTMLElement();
+    const mainHtmlView = mainView.getHTMLElement();
+    if (headerHtmleElement && mainHtmlView) {
+      document.body.append(headerHtmleElement, mainHtmlView);
+    }
   }
 }

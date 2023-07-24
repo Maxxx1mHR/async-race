@@ -1,11 +1,39 @@
-export default class MainView {
+import View from '../view';
+import GarageView from './garage/garage-view';
+import WinnersView from './winners/winners-view';
+
+const cssClasses = {
+  MAIN: 'main',
+};
+
+export default class MainView extends View {
+  public winnersView: WinnersView;
+
+  public garageView: GarageView;
+
   constructor() {
-    this.createView();
+    const params = {
+      tag: 'main',
+      className: [cssClasses.MAIN],
+    };
+    super(params);
+
+    this.winnersView = new WinnersView();
+    this.garageView = new GarageView(this.winnersView);
+    const garage = this.garageView.getHTMLElement();
+    if (garage instanceof HTMLElement) {
+      this.elementCreator.addInnerElement(garage);
+    }
   }
 
-  private createView(): void {
-    const main = document.createElement('div');
-    main.classList.add('main');
-    document.body.append(main);
+  public setContent(view: View): void {
+    const element = view.getHTMLElement();
+    const currentElement = this.elementCreator.getElement();
+    while (currentElement?.firstElementChild) {
+      currentElement.firstElementChild.remove();
+    }
+    if (element instanceof HTMLElement) {
+      this.elementCreator.addInnerElement(element);
+    }
   }
 }
