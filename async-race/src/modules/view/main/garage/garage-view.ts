@@ -91,7 +91,9 @@ const carModel = [
 export default class GarageView extends View {
   private currentPage: number;
 
-  private inputElements: InputView[];
+  private inputElementsCreate: InputView[];
+
+  private inputElementsUpdate: InputView[];
 
   private selectedCarValue: number;
 
@@ -112,7 +114,9 @@ export default class GarageView extends View {
     };
     super(params);
 
-    this.inputElements = [];
+    this.inputElementsCreate = [];
+    this.inputElementsUpdate = [];
+
     this.selectedCarValue = 0;
     this.carElements = [];
     this.settingButton = [];
@@ -120,7 +124,6 @@ export default class GarageView extends View {
     this.currentPage = 1;
     this.winnersView = winnersView;
     this.creatorModal = null;
-
     this.configureSettingsView();
     this.configureGarageCarView();
   }
@@ -132,11 +135,9 @@ export default class GarageView extends View {
     };
     const createSetting = new ElementCreator(parammsSetting);
     this.elementCreator.addInnerElement(createSetting);
-
     this.configuteInputs().forEach((element) => {
       createSetting.addInnerElement(element);
     });
-
     const parammsSettingGenerate = {
       tag: 'div',
       className: [cssClasses.SETTING_GENERATE],
@@ -148,11 +149,9 @@ export default class GarageView extends View {
     buttonsSetting.forEach((button) => {
       const buttonElement = new ButtonView(button);
       const htmlButtonElement = buttonElement.getHTMLElement();
-
       if (htmlButtonElement) {
         this.settingButton.push(htmlButtonElement);
       }
-
       if (htmlButtonElement instanceof HTMLElement) {
         createSettingGenerate.addInnerElement(htmlButtonElement);
       }
@@ -164,14 +163,12 @@ export default class GarageView extends View {
       tag: 'div',
       className: [cssClasses.SETTING_CREATE],
     };
-    const createSettingCreate = new ElementCreator(parammsSettingCreate);
-
     const parammsSettingUpdate = {
       tag: 'div',
       className: [cssClasses.SETTING_UPDATE],
     };
+    const createSettingCreate = new ElementCreator(parammsSettingCreate);
     const createSettingUpdate = new ElementCreator(parammsSettingUpdate);
-
     const buttonCreate = new ButtonView(this.getInputButtons()[0]);
     const htmlButtonCreate = buttonCreate.getHTMLElement();
     const buttonUpdate = new ButtonView(this.getInputButtons()[1]);
@@ -179,27 +176,28 @@ export default class GarageView extends View {
 
     const inputs = this.getInputs();
     inputs.forEach((input) => {
-      const inputElement = new InputView(input);
-      const htmlInputElement = inputElement.getHTMLElement();
-      if (htmlInputElement && htmlButtonCreate instanceof HTMLElement) {
-        createSettingCreate.addInnerElement(htmlInputElement);
+      const inputElementCreate = new InputView(input);
+      const inputElementUpdate = new InputView(input);
+      const htmlInputElementCreate = inputElementCreate.getHTMLElement();
+      const htmlInputElementUpdate = inputElementUpdate.getHTMLElement();
+      if (
+        htmlInputElementCreate &&
+        htmlButtonCreate instanceof HTMLElement &&
+        htmlInputElementUpdate instanceof HTMLInputElement &&
+        htmlButtonUpdate instanceof HTMLElement
+      ) {
+        htmlInputElementUpdate.disabled = true;
+        createSettingCreate.addInnerElement(htmlInputElementCreate);
         createSettingCreate.addInnerElement(htmlButtonCreate);
-        this.inputElements.push(inputElement);
+        createSettingUpdate.addInnerElement(htmlInputElementUpdate);
+        createSettingUpdate.addInnerElement(htmlButtonUpdate);
+        this.inputElementsCreate.push(inputElementCreate);
+        this.inputElementsUpdate.push(inputElementUpdate);
       }
     });
     if (htmlButtonCreate) {
       this.settingButton.push(htmlButtonCreate);
     }
-    inputs.forEach((input) => {
-      const inputElement = new InputView(input);
-      const htmlInputElement = inputElement.getHTMLElement();
-      if (htmlInputElement instanceof HTMLInputElement && htmlButtonUpdate instanceof HTMLElement) {
-        htmlInputElement.disabled = true;
-        createSettingUpdate.addInnerElement(htmlInputElement);
-        createSettingUpdate.addInnerElement(htmlButtonUpdate);
-        this.inputElements.push(inputElement);
-      }
-    });
     if (htmlButtonUpdate) {
       this.settingButton.push(htmlButtonUpdate);
     }
@@ -211,7 +209,7 @@ export default class GarageView extends View {
       {
         type: inputTypes.TYPE_TEXT,
         maxlength: 20,
-        placeholder: 'Максимум 20 символов',
+        placeholder: 'Max length 20 symbols',
       },
       {
         type: inputTypes.TYPE_COLOR,
@@ -223,87 +221,78 @@ export default class GarageView extends View {
 
   private getInputButtons(): IButton[] {
     const serverQuery = new ServerQuery();
-
     const buttons = [
       {
         className: [cssClasses.BUTTON],
         name: inputButtons.CREATE,
         callback: async (): Promise<void> => {
-          const textValueFromInputCreate = this.inputElements[0].getHTMLElement() as HTMLInputElement;
-          const colorValueFromInputCreate = this.inputElements[1].getHTMLElement() as HTMLInputElement;
-          await serverQuery.createCar({
-            name: textValueFromInputCreate.value,
-            color: colorValueFromInputCreate.value,
-          });
-          textValueFromInputCreate.value = '';
-          colorValueFromInputCreate.value = '#ffffff';
-          this.updateContentGarage();
+          this.createCar(serverQuery);
         },
       },
       {
         className: [cssClasses.BUTTON, cssClasses.BUTTON_DISABLED],
         name: inputButtons.UPDATE,
         callback: async (): Promise<void> => {
-          this.settingButton[1].classList.add('button-disabled');
-          const textValueFromInputUpdate = this.inputElements[2].getHTMLElement() as HTMLInputElement;
-          const colorValueFromInputUpdate = this.inputElements[3].getHTMLElement() as HTMLInputElement;
-          await serverQuery.updateCar(this.selectedCarValue, {
-            name: textValueFromInputUpdate.value,
-            color: colorValueFromInputUpdate.value,
-          });
-          textValueFromInputUpdate.value = '';
-          colorValueFromInputUpdate.value = '#ffffff';
-          textValueFromInputUpdate.disabled = true;
-          colorValueFromInputUpdate.disabled = true;
-          this.updateContentGarage();
-          this.winnersView.setContent();
+          this.updateCar(serverQuery);
         },
       },
     ];
     return buttons;
   }
 
+  private async createCar(serverQuery: ServerQuery): Promise<void> {
+    const [textInput, colorInput] = this.inputElementsCreate;
+    const textValueFromInputCreate = textInput.getHTMLElement() as HTMLInputElement;
+    const colorValueFromInputCreate = colorInput.getHTMLElement() as HTMLInputElement;
+    await serverQuery.createCar({
+      name: textValueFromInputCreate.value,
+      color: colorValueFromInputCreate.value,
+    });
+    textValueFromInputCreate.value = '';
+    colorValueFromInputCreate.value = '#ffffff';
+    this.updateContentGarage();
+  }
+
+  private async updateCar(serverQuery: ServerQuery): Promise<void> {
+    this.settingButton[1].classList.add('button-disabled');
+    const [textInput, colorInput] = this.inputElementsUpdate;
+    const textValueFromInputUpdate = textInput.getHTMLElement() as HTMLInputElement;
+    const colorValueFromInputUpdate = colorInput.getHTMLElement() as HTMLInputElement;
+    await serverQuery.updateCar(this.selectedCarValue, {
+      name: textValueFromInputUpdate.value,
+      color: colorValueFromInputUpdate.value,
+    });
+    textValueFromInputUpdate.value = '';
+    colorValueFromInputUpdate.value = '#ffffff';
+    this.updateContentGarage();
+    textValueFromInputUpdate.disabled = true;
+    colorValueFromInputUpdate.disabled = true;
+    this.winnersView.setContent();
+  }
+
   private getSettingButtons(): IButton[] {
     const buttons = [
       {
         className: [cssClasses.BUTTON],
-
         name: settingButtons.RACE,
-
         callback: (): void => {
           let oneCall = true;
           let i = 0;
 
           const navButtons = document.querySelectorAll('.navigation__item');
           navButtons[1]?.classList.add('button-disabled');
-          this.settingButton[0].classList.add('button-disabled');
-          this.settingButton[1].classList.add('button-disabled');
-          this.settingButton[2].classList.add('button-disabled');
-          this.settingButton[3].classList.add('button-disabled');
-          this.settingButton[4].classList.add('button-disabled');
-
-          this.paginationGarageButton[0].classList.add('button-disabled');
-          this.paginationGarageButton[1].classList.add('button-disabled');
+          this.setSettingButtonsDisabled();
+          this.setPaginationButtonsDisabled();
 
           const serverQuery = new ServerQuery();
           const finishFlag = document.querySelector('.track__finish');
-          const startedCar: Promise<number[]>[] = [];
-
-          this.carElements.forEach((item) => {
-            item.createdButtons[0].classList.add('button-disabled');
-            item.createdButtons[1].classList.add('button-disabled');
-            item.createdButtons[2].classList.add('button-disabled');
-            item.createdButtons[3].classList.add('button-disabled');
-            const time = serverQuery.getEngineStatus(item.carsOnPage.id, 'started');
-            startedCar.push(time);
-          });
+          const startedCar = this.requestStartEngine(serverQuery);
 
           Promise.all(startedCar).then((data) =>
             data.forEach(async (item, index) => {
               navButtons[1]?.classList.remove('button-disabled');
 
               let requestId: number | null = null;
-
               function startAmination(duration: number, callback: (arg0: number) => void): void {
                 let startAminations: number | null = null;
 
@@ -321,8 +310,11 @@ export default class GarageView extends View {
                 });
               }
 
+              const [idCurrentCar, time] = item;
+              const currentTimeCar = Number((time / 1000).toFixed(2));
+
               if (finishFlag instanceof HTMLElement) {
-                const duration = item[1];
+                const duration = time;
                 const distance = finishFlag.offsetLeft - 80;
                 const car = this.carElements[index].createdCar[0];
 
@@ -333,53 +325,41 @@ export default class GarageView extends View {
               }
 
               await serverQuery
-                .getDrive(item[0])
+                .getDrive(idCurrentCar)
                 .then(async () => {
-                  await serverQuery.getWinner(item[0]).then(async (winner) => {
+                  await serverQuery.getWinner(idCurrentCar).then(async (winner) => {
                     i += 1;
                     if (oneCall) {
                       oneCall = false;
-                      if (winner.id !== item[0]) {
-                        await serverQuery
-                          .createWinner({
-                            id: item[0],
-                            wins: 1,
-                            time: Number((item[1] / 1000).toFixed(2)),
-                          })
-                          .then(() => {
-                            this.winnersView.setContent();
-                          });
-                      } else if (winner.id === item[0] && winner.time <= Number((item[1] / 1000).toFixed(2))) {
-                        await serverQuery
-                          .updateWinner(item[0], {
-                            id: item[0],
-                            wins: Number(winner.wins) + 1,
-                            time: winner.time,
-                          })
-                          .then(() => {
-                            this.winnersView.setContent();
-                          });
-                      } else if (winner.id === item[0] && winner.time >= Number((item[1] / 1000).toFixed(2))) {
-                        await serverQuery
-                          .updateWinner(item[0], {
-                            id: item[0],
-                            wins: Number(winner.wins) + 1,
-                            time: Number((item[1] / 1000).toFixed(2)),
-                          })
-                          .then(() => {
-                            this.winnersView.setContent();
-                          });
+                      if (winner.id !== idCurrentCar) {
+                        await serverQuery.createWinner({
+                          id: idCurrentCar,
+                          wins: 1,
+                          time: currentTimeCar,
+                        });
+                      } else if (winner.id === idCurrentCar && winner.time <= currentTimeCar) {
+                        await serverQuery.updateWinner(idCurrentCar, {
+                          id: idCurrentCar,
+                          wins: Number(winner.wins) + 1,
+                          time: winner.time,
+                        });
+                      } else if (winner.id === idCurrentCar && winner.time >= currentTimeCar) {
+                        await serverQuery.updateWinner(idCurrentCar, {
+                          id: idCurrentCar,
+                          wins: Number(winner.wins) + 1,
+                          time: currentTimeCar,
+                        });
                       }
                       this.creatorModal?.setTextContent(
-                        `${this.carElements[index].carsOnPage.name} went first ${Number((item[1] / 1000).toFixed(2))}`,
+                        `${this.carElements[index].carsOnPage.name} went first ${currentTimeCar}`,
                       );
+                      this.winnersView.setContent();
                     }
                   });
                 })
                 .catch(() => {
                   if (requestId) {
                     i += 1;
-
                     cancelAnimationFrame(requestId);
                   }
                 });
@@ -395,21 +375,14 @@ export default class GarageView extends View {
         name: settingButtons.RESET,
         callback: (): void => {
           this.creatorModal?.setTextContent('');
-          this.settingButton[3].classList.add('button-disabled');
-          this.settingButton[1].classList.add('button-disabled');
-          this.settingButton[0].classList.remove('button-disabled');
-          this.settingButton[2].classList.remove('button-disabled');
-          this.settingButton[4].classList.remove('button-disabled');
-
-          this.paginationGarageButton[0].classList.remove('button-disabled');
-          this.paginationGarageButton[1].classList.remove('button-disabled');
-
+          this.setSettingButtonsActive();
+          this.setPaginationButtonsActive();
           this.carElements.forEach((item) => {
-            item.createdButtons[0].classList.remove('button-disabled');
-            item.createdButtons[1].classList.remove('button-disabled');
-            item.createdButtons[2].classList.remove('button-disabled');
+            const [select, remove, start] = [...item.createdButtons];
+            select.classList.remove('button-disabled');
+            remove.classList.remove('button-disabled');
+            start.classList.remove('button-disabled');
           });
-
           const serverQuery = new ServerQuery();
           this.carElements.forEach(async (carElements) => {
             await serverQuery.getEngineStatus(carElements.carsOnPage.id, 'stopped');
@@ -429,8 +402,45 @@ export default class GarageView extends View {
         },
       },
     ];
-
     return buttons;
+  }
+
+  private setSettingButtonsDisabled(): void {
+    this.settingButton.forEach((button) => {
+      button.classList.add('button-disabled');
+    });
+  }
+
+  private setSettingButtonsActive(): void {
+    this.settingButton.forEach((button, index) => {
+      if (index % 2 === 0) {
+        button.classList.remove('button-disabled');
+      } else {
+        button.classList.add('button-disabled');
+      }
+    });
+  }
+
+  private setPaginationButtonsDisabled(): void {
+    this.paginationGarageButton.forEach((button) => {
+      button.classList.add('button-disabled');
+    });
+  }
+
+  private setPaginationButtonsActive(): void {
+    this.paginationGarageButton.forEach((button) => {
+      button.classList.remove('button-disabled');
+    });
+  }
+
+  private requestStartEngine(serverQuery: ServerQuery): Promise<number[]>[] {
+    const startedCar: Promise<number[]>[] = [];
+    this.carElements.forEach((item) => {
+      item.createdButtons.forEach((btn) => btn.classList.add('button-disabled'));
+      const time = serverQuery.getEngineStatus(item.carsOnPage.id, 'started');
+      startedCar.push(time);
+    });
+    return startedCar;
   }
 
   private async generateCars(): Promise<void> {
@@ -579,8 +589,8 @@ export default class GarageView extends View {
         className: [cssClasses.BUTTON, cssClasses.BUTTON_SMALL],
         name: carButtons.SELECT,
         callback: (): void => {
-          const textValueFromInputUpdate = this.inputElements[2].getHTMLElement() as HTMLInputElement;
-          const colorValueFromInputUpdate = this.inputElements[3].getHTMLElement() as HTMLInputElement;
+          const textValueFromInputUpdate = this.inputElementsUpdate[0].getHTMLElement() as HTMLInputElement;
+          const colorValueFromInputUpdate = this.inputElementsUpdate[1].getHTMLElement() as HTMLInputElement;
           this.settingButton[1].classList.remove('button-disabled');
           textValueFromInputUpdate.disabled = false;
           colorValueFromInputUpdate.disabled = false;

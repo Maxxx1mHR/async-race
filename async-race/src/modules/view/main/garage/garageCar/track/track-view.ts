@@ -93,7 +93,6 @@ export default class TrackView extends View {
       if (htmlButtonElement) {
         this.createdButtons.push(htmlButtonElement);
       }
-
       if (htmlButtonElement instanceof HTMLElement) {
         trackSettingButtons.addInnerElement(htmlButtonElement);
       }
@@ -104,30 +103,7 @@ export default class TrackView extends View {
       className: [cssClasses.BUTTON, cssClasses.BUTTON_SMALL],
       textContent: 'start',
       callback: async (): Promise<void> => {
-        this.createdButtons[0].classList.add('button-disabled');
-        this.createdButtons[1].classList.add('button-disabled');
-        this.createdButtons[2].classList.add('button-disabled');
-        this.createdButtons[3].classList.remove('button-disabled');
-        this.settingButtonElements[3].classList.remove('button-disabled');
-
-        const serverQuery = new ServerQuery();
-        const finishFlag = document.querySelector('.track__finish');
-        const time = await serverQuery.getEngineStatus(this.carsOnPage.id, 'started');
-
-        if (finishFlag instanceof HTMLElement) {
-          const duration = time[1];
-          const distance = finishFlag.offsetLeft - 80;
-          const car = this.createdCar[0];
-          startAmination(duration, (progress) => {
-            const translate = progress * distance;
-            car.style.transform = `translateX(${translate}px)`;
-          });
-        }
-        await serverQuery.getDrive(this.carsOnPage.id).catch(() => {
-          if (requestId) {
-            cancelAnimationFrame(requestId);
-          }
-        });
+        this.startAnimationBySinagleCar();
       },
     };
 
@@ -143,19 +119,7 @@ export default class TrackView extends View {
       className: [cssClasses.BUTTON, cssClasses.BUTTON_SMALL, cssClasses.BUTTON_DISABLED],
       textContent: 'stop',
       callback: async (): Promise<void> => {
-        this.createdButtons[0].classList.remove('button-disabled');
-        this.createdButtons[1].classList.remove('button-disabled');
-        this.createdButtons[2].classList.remove('button-disabled');
-        this.createdButtons[3].classList.add('button-disabled');
-        this.settingButtonElements[3].classList.add('button-disabled');
-
-        const serverQuery = new ServerQuery();
-        await serverQuery.getEngineStatus(this.carsOnPage.id, 'stopped');
-        if (requestId) {
-          cancelAnimationFrame(requestId);
-          const car = this.createdCar[0];
-          car.style.transform = `translateX(${0}px)`;
-        }
+        this.stopAnimationBySinagleCar();
       },
     };
 
@@ -171,7 +135,6 @@ export default class TrackView extends View {
       className: [cssClasses.TRACK_CAR],
     };
     const carWrapper = new ElementCreator(paramsCarWrapper);
-
     trackWrapper.addInnerElement(carWrapper);
 
     const paramsName = {
@@ -196,9 +159,56 @@ export default class TrackView extends View {
     carWrapper.addInnerElement(car);
   }
 
+  private setButtonsDisabled(): void {
+    this.createdButtons.forEach((button) => {
+      button.classList.add('button-disabled');
+    });
+    this.createdButtons[3].classList.remove('button-disabled');
+    this.settingButtonElements[3].classList.remove('button-disabled');
+  }
+
+  private setButtonsActive(): void {
+    this.createdButtons.forEach((button) => {
+      button.classList.remove('button-disabled');
+    });
+    this.createdButtons[3].classList.add('button-disabled');
+    this.settingButtonElements[3].classList.add('button-disabled');
+  }
+
+  private async startAnimationBySinagleCar(): Promise<void> {
+    this.setButtonsDisabled();
+    const serverQuery = new ServerQuery();
+    const finishFlag = document.querySelector('.track__finish');
+    const time = await serverQuery.getEngineStatus(this.carsOnPage.id, 'started');
+    if (finishFlag instanceof HTMLElement) {
+      const duration = time[1];
+      const distance = finishFlag.offsetLeft - 80;
+      const car = this.createdCar[0];
+      startAmination(duration, (progress) => {
+        const translate = progress * distance;
+        car.style.transform = `translateX(${translate}px)`;
+      });
+    }
+    await serverQuery.getDrive(this.carsOnPage.id).catch(() => {
+      if (requestId) {
+        cancelAnimationFrame(requestId);
+      }
+    });
+  }
+
+  private async stopAnimationBySinagleCar(): Promise<void> {
+    this.setButtonsActive();
+    const serverQuery = new ServerQuery();
+    await serverQuery.getEngineStatus(this.carsOnPage.id, 'stopped');
+    if (requestId) {
+      cancelAnimationFrame(requestId);
+      const car = this.createdCar[0];
+      car.style.transform = `translateX(${0}px)`;
+    }
+  }
+
   public setContent(): void {
     const currentElement = this.elementCreator.getElement();
-
     while (currentElement?.firstElementChild) {
       currentElement.firstElementChild.remove();
     }

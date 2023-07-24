@@ -53,14 +53,7 @@ export default class WinnersView extends View {
   }
 
   private async configureView(): Promise<void> {
-    const serverQuery = new ServerQuery();
-
-    const winners: IWinnerResponse = await serverQuery.getWinners([
-      { key: '_page', value: this.currentPage },
-      { key: '_limit', value: ITEM_PER_PAGE },
-      { key: '_sort', value: this.sort },
-      { key: '_order', value: this.order },
-    ]);
+    const winners = await this.getWinners();
 
     const countPage = Math.ceil(winners.count / ITEM_PER_PAGE) || 1;
 
@@ -112,103 +105,15 @@ export default class WinnersView extends View {
       const scroreTableName = new ElementCreator(paramsScoreTableName);
       scoreTableHeader.addInnerElement(scroreTableName);
       if (head === 'Wins') {
-        scroreTableName.setCssClasses([cssClasses.ARROW]);
-        if (this.order === 'DESC' && this.sort === 'wins') {
-          scroreTableName.setCssClasses([cssClasses.ARROW, 'arrow-desc']);
-        }
-        if (this.order === 'ASC' && this.sort === 'wins') {
-          scroreTableName.setCssClasses([cssClasses.ARROW, 'arrow-asc']);
-        }
-        scroreTableName.setCallback(() => {
-          this.sort = 'wins';
-          if (this.order === 'ASC') {
-            scroreTableName.getElement()?.classList.remove('arrow-asc');
-            scroreTableName.getElement()?.classList.add('arrow-desc');
-            this.order = 'DESC';
-          } else {
-            scroreTableName.getElement()?.classList.remove('arrow-desc');
-            scroreTableName.getElement()?.classList.add('arrow-asc');
-            this.order = 'ASC';
-          }
-          this.setContent();
-        });
+        this.sortResult(scroreTableName, 'wins');
       }
       if (head === 'Best time (seconds)') {
-        scroreTableName.setCssClasses([cssClasses.ARROW]);
-        if (this.order === 'DESC' && this.sort === 'time') {
-          scroreTableName.setCssClasses([cssClasses.ARROW, 'arrow-desc']);
-        }
-        if (this.order === 'ASC' && this.sort === 'time') {
-          scroreTableName.setCssClasses([cssClasses.ARROW, 'arrow-asc']);
-        }
-        scroreTableName.setCallback(() => {
-          this.sort = 'time';
-          if (this.order === 'ASC') {
-            scroreTableName.getElement()?.classList.remove('arrow-asc');
-            scroreTableName.getElement()?.classList.add('arrow-desc');
-            this.order = 'DESC';
-          } else {
-            scroreTableName.getElement()?.classList.remove('arrow-desc');
-            scroreTableName.getElement()?.classList.add('arrow-asc');
-            this.order = 'ASC';
-          }
-          this.setContent();
-        });
+        this.sortResult(scroreTableName, 'time');
       }
     });
 
-    winners.data.forEach(async (winner, index) => {
-      const car: ICar = await serverQuery.getCar(Number(winner.id));
+    this.setWinners(winners, scoreList);
 
-      const paramsScoreItem = {
-        tag: 'li',
-        className: [cssClasses.SCORE_ITEM],
-      };
-
-      const scoreItem = new ElementCreator(paramsScoreItem);
-
-      const paramsScoreItemNumber = {
-        tag: 'span',
-        className: [cssClasses.SCORE_ITEM_CAR],
-        textContent: String(index + 1),
-      };
-      const scoreItemNumber = new ElementCreator(paramsScoreItemNumber);
-
-      const paramsScoreItemCar = {
-        tag: 'div',
-        className: [cssClasses.CAR, cssClasses.CAR_SMALL],
-        backgroundColor: car.color,
-      };
-      const scoreItemCar = new ElementCreator(paramsScoreItemCar);
-
-      const paramsScoreItemName = {
-        tag: 'span',
-        className: [cssClasses.SCORE_ITEM_CAR],
-        textContent: car.name,
-      };
-      const scoreItemName = new ElementCreator(paramsScoreItemName);
-
-      const paramsScoreItemWins = {
-        tag: 'span',
-        className: [cssClasses.SCORE_ITEM_CAR],
-        textContent: String(winner.wins),
-      };
-      const scoreItemWins = new ElementCreator(paramsScoreItemWins);
-
-      const paramsScoreItemTime = {
-        tag: 'span',
-        className: [cssClasses.SCORE_ITEM_CAR],
-        textContent: String(winner.time),
-      };
-      const scoreItemTime = new ElementCreator(paramsScoreItemTime);
-
-      scoreList.addInnerElement(scoreItem);
-      scoreItem.addInnerElement(scoreItemNumber);
-      scoreItem.addInnerElement(scoreItemCar);
-      scoreItem.addInnerElement(scoreItemName);
-      scoreItem.addInnerElement(scoreItemWins);
-      scoreItem.addInnerElement(scoreItemTime);
-    });
     const paramsNav = {
       tag: 'nav',
       className: [cssClasses.NAV],
@@ -258,6 +163,95 @@ export default class WinnersView extends View {
     if (this.currentPage === countPage) {
       buttonNext.setCssClasses([cssClasses.BUTTON_DISABLED]);
     }
+  }
+
+  private sortResult(scroreTableName: ElementCreator, type: 'time' | 'wins'): void {
+    scroreTableName.setCssClasses([cssClasses.ARROW]);
+    if (this.order === 'DESC' && this.sort === type) {
+      scroreTableName.setCssClasses([cssClasses.ARROW, 'arrow-desc']);
+    }
+    if (this.order === 'ASC' && this.sort === type) {
+      scroreTableName.setCssClasses([cssClasses.ARROW, 'arrow-asc']);
+    }
+    scroreTableName.setCallback(() => {
+      this.sort = type;
+      if (this.order === 'ASC') {
+        scroreTableName.getElement()?.classList.remove('arrow-asc');
+        scroreTableName.getElement()?.classList.add('arrow-desc');
+        this.order = 'DESC';
+      } else {
+        scroreTableName.getElement()?.classList.remove('arrow-desc');
+        scroreTableName.getElement()?.classList.add('arrow-asc');
+        this.order = 'ASC';
+      }
+      this.setContent();
+    });
+  }
+
+  private async getWinners(): Promise<IWinnerResponse> {
+    const serverQuery = new ServerQuery();
+    const winners = serverQuery.getWinners([
+      { key: '_page', value: this.currentPage },
+      { key: '_limit', value: ITEM_PER_PAGE },
+      { key: '_sort', value: this.sort },
+      { key: '_order', value: this.order },
+    ]);
+    return winners;
+  }
+
+  private setWinners(winners: IWinnerResponse, scoreList: ElementCreator): void {
+    const serverQuery = new ServerQuery();
+    winners.data.forEach(async (winner, index) => {
+      const car: ICar = await serverQuery.getCar(Number(winner.id));
+
+      const paramsScoreItem = {
+        tag: 'li',
+        className: [cssClasses.SCORE_ITEM],
+      };
+
+      const scoreItem = new ElementCreator(paramsScoreItem);
+      scoreList.addInnerElement(scoreItem);
+
+      const paramsScoreItemNumber = {
+        tag: 'span',
+        className: [cssClasses.SCORE_ITEM_CAR],
+        textContent: String(index + 1),
+      };
+      const scoreItemNumber = new ElementCreator(paramsScoreItemNumber);
+      scoreItem.addInnerElement(scoreItemNumber);
+
+      const paramsScoreItemCar = {
+        tag: 'div',
+        className: [cssClasses.CAR, cssClasses.CAR_SMALL],
+        backgroundColor: car.color,
+      };
+      const scoreItemCar = new ElementCreator(paramsScoreItemCar);
+      scoreItem.addInnerElement(scoreItemCar);
+
+      const paramsScoreItemName = {
+        tag: 'span',
+        className: [cssClasses.SCORE_ITEM_CAR],
+        textContent: car.name,
+      };
+      const scoreItemName = new ElementCreator(paramsScoreItemName);
+      scoreItem.addInnerElement(scoreItemName);
+
+      const paramsScoreItemWins = {
+        tag: 'span',
+        className: [cssClasses.SCORE_ITEM_CAR],
+        textContent: String(winner.wins),
+      };
+      const scoreItemWins = new ElementCreator(paramsScoreItemWins);
+      scoreItem.addInnerElement(scoreItemWins);
+
+      const paramsScoreItemTime = {
+        tag: 'span',
+        className: [cssClasses.SCORE_ITEM_CAR],
+        textContent: String(winner.time),
+      };
+      const scoreItemTime = new ElementCreator(paramsScoreItemTime);
+      scoreItem.addInnerElement(scoreItemTime);
+    });
   }
 
   public setContent(): void {
